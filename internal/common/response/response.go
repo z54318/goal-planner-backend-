@@ -9,6 +9,12 @@ type Body struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
+// ErrorBody 用于 OpenAPI 文档中的失败响应结构。
+type ErrorBody struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 // Success 返回成功响应。
 func Success(c *gin.Context, data interface{}) {
 	c.JSON(200, Body{
@@ -20,7 +26,7 @@ func Success(c *gin.Context, data interface{}) {
 
 // Fail 返回失败响应。
 func Fail(c *gin.Context, code int, message string) {
-	c.JSON(200, Body{
+	c.JSON(code, Body{
 		Code:    code,
 		Message: message,
 	})

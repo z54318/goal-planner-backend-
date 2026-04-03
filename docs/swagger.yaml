@@ -1,0 +1,363 @@
+basePath: /
+definitions:
+  auth.LoginData:
+    properties:
+      token:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  auth.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.LoginResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/auth.LoginData'
+      message:
+        type: string
+    type: object
+  auth.Menu:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/auth.Menu'
+        type: array
+      component:
+        type: string
+      hidden:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: integer
+      path:
+        type: string
+      permission_code:
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  auth.MenusResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/auth.Menu'
+        type: array
+      message:
+        type: string
+    type: object
+  auth.ProfileData:
+    properties:
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  auth.ProfileResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/auth.ProfileData'
+      message:
+        type: string
+    type: object
+  auth.RegisterData:
+    properties:
+      email:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.RegisterResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/auth.RegisterData'
+      message:
+        type: string
+    type: object
+  goal.CreateGoalRequest:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  goal.Goal:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  goal.GoalListData:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/goal.Goal'
+        type: array
+      total:
+        type: integer
+    type: object
+  goal.GoalListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/goal.GoalListData'
+      message:
+        type: string
+    type: object
+  goal.GoalResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/goal.Goal'
+      message:
+        type: string
+    type: object
+  response.ErrorBody:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Goal Planner 后端接口文档
+  title: Goal Planner Backend API
+  version: "1.0"
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      operationId: authLogin
+      parameters:
+      - description: 登录参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: 用户登录
+      tags:
+      - auth
+  /api/auth/menus:
+    get:
+      operationId: authMenus
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.MenusResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取当前登录用户可见菜单
+      tags:
+      - auth
+  /api/auth/profile:
+    get:
+      operationId: authProfile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.ProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取当前登录用户信息
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      operationId: authRegister
+      parameters:
+      - description: 注册参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: 用户注册
+      tags:
+      - auth
+  /api/goals:
+    get:
+      operationId: goalsList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goal.GoalListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: 获取目标列表
+      tags:
+      - goals
+    post:
+      consumes:
+      - application/json
+      operationId: goalCreate
+      parameters:
+      - description: 目标参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/goal.CreateGoalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goal.GoalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: 创建目标
+      tags:
+      - goals
+  /api/goals/{id}:
+    get:
+      operationId: goalGet
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goal.GoalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      summary: 获取目标详情
+      tags:
+      - goals
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

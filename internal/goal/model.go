@@ -17,3 +17,23 @@ type CreateGoalRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 }
+
+// GoalResponse 表示单个目标成功响应。
+type GoalResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    Goal   `json:"data"`
+}
+
+// GoalListData 表示目标列表响应中的 data 字段。
+type GoalListData struct {
+	List  []Goal `json:"list"`
+	Total int    `json:"total"`
+}
+
+// GoalListResponse 表示目标列表成功响应。
+type GoalListResponse struct {
+	Code    int          `json:"code"`
+	Message string       `json:"message"`
+	Data    GoalListData `json:"data"`
+}

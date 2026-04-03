@@ -31,6 +31,14 @@ func (h *Handler) RegisterRoutes(router *gin.Engine) {
 	router.POST("/api/goals", h.CreateGoal)
 }
 
+// ListGoals 获取目标列表
+// @Summary 获取目标列表
+// @Tags goals
+// @ID goalsList
+// @Produce json
+// @Success 200 {object} GoalListResponse
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/goals [get]
 // ListGoals 返回数据库中的目标列表。
 func (h *Handler) ListGoals(c *gin.Context) {
 	goals, err := h.repo.List(c.Request.Context())
@@ -45,6 +53,17 @@ func (h *Handler) ListGoals(c *gin.Context) {
 	})
 }
 
+// GetGoal 获取目标详情
+// @Summary 获取目标详情
+// @Tags goals
+// @ID goalGet
+// @Produce json
+// @Param id path int true "目标ID"
+// @Success 200 {object} GoalResponse
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/goals/{id} [get]
 // GetGoal 返回单个目标详情。
 func (h *Handler) GetGoal(c *gin.Context) {
 	// 从路由参数中读取目标 ID。
@@ -69,6 +88,17 @@ func (h *Handler) GetGoal(c *gin.Context) {
 	response.Success(c, goal)
 }
 
+// CreateGoal 创建目标
+// @Summary 创建目标
+// @Tags goals
+// @ID goalCreate
+// @Accept json
+// @Produce json
+// @Param request body CreateGoalRequest true "目标参数"
+// @Success 200 {object} GoalResponse
+// @Failure 400 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/goals [post]
 // CreateGoal 创建一条新的目标记录。
 func (h *Handler) CreateGoal(c *gin.Context) {
 	var req CreateGoalRequest

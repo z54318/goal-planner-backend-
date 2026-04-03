@@ -6,3 +6,9 @@
 
 # 忽略本地编译产物
 *.exe
+
+# 忽略 Node 工具依赖
+node_modules/
+
+# 忽略 openapi-generator 本地工作目录
+.openapi-generator/

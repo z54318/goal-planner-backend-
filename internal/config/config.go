@@ -22,7 +22,7 @@ func Load() Config {
 
 	mysqlDSN := getEnv("MYSQL_DSN", "")
 	redisAddr := getEnv("REDIS_ADDR", "")
-	jwtSecret := getEnv("JWT_SECRET", "")
+	jwtSecret := getEnv("JWT_SECRET", "goal-planner-dev-secret")
 	aiAPIKey := getEnv("AI_API_KEY", "")
 
 	return Config{
