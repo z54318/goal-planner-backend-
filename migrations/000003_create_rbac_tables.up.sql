@@ -1,0 +1,51 @@
+CREATE TABLE roles (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '角色ID',
+    name VARCHAR(100) NOT NULL COMMENT '角色名称',
+    code VARCHAR(100) NOT NULL COMMENT '角色编码',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_roles_code (code)
+) COMMENT='角色表';
+
+CREATE TABLE permissions (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '权限ID',
+    name VARCHAR(100) NOT NULL COMMENT '权限名称',
+    code VARCHAR(100) NOT NULL COMMENT '权限编码',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_permissions_code (code)
+) COMMENT='权限表';
+
+CREATE TABLE menus (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '菜单ID',
+    parent_id BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '父菜单ID，0表示顶级',
+    name VARCHAR(100) NOT NULL COMMENT '菜单名称',
+    path VARCHAR(255) NOT NULL COMMENT '前端路由路径',
+    component VARCHAR(255) DEFAULT '' COMMENT '前端组件路径',
+    icon VARCHAR(100) DEFAULT '' COMMENT '菜单图标',
+    sort_order INT NOT NULL DEFAULT 0 COMMENT '排序值',
+    permission_code VARCHAR(100) DEFAULT '' COMMENT '菜单所需权限编码',
+    hidden TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否隐藏：0否 1是',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT='菜单表';
+
+CREATE TABLE user_roles (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+    user_id BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
+    role_id BIGINT UNSIGNED NOT NULL COMMENT '角色ID',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    UNIQUE KEY uk_user_roles_user_role (user_id, role_id),
+    CONSTRAINT fk_user_roles_user_id FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_user_roles_role_id FOREIGN KEY (role_id) REFERENCES roles(id)
+) COMMENT='用户角色关联表';
+
+CREATE TABLE role_permissions (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+    role_id BIGINT UNSIGNED NOT NULL COMMENT '角色ID',
+    permission_id BIGINT UNSIGNED NOT NULL COMMENT '权限ID',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    UNIQUE KEY uk_role_permissions_role_permission (role_id, permission_id),
+    CONSTRAINT fk_role_permissions_role_id FOREIGN KEY (role_id) REFERENCES roles(id),
+    CONSTRAINT fk_role_permissions_permission_id FOREIGN KEY (permission_id) REFERENCES permissions(id)
+) COMMENT='角色权限关联表';

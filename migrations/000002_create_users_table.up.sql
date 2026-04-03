@@ -1,0 +1,11 @@
+CREATE TABLE users (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '用户ID',
+    username VARCHAR(100) NOT NULL COMMENT '用户名',
+    email VARCHAR(150) NOT NULL COMMENT '邮箱',
+    password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希',
+    status VARCHAR(50) NOT NULL DEFAULT 'active' COMMENT '用户状态',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_users_username (username),
+    UNIQUE KEY uk_users_email (email)
+) COMMENT='用户表';
