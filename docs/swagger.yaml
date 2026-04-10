@@ -2,18 +2,26 @@ basePath: /
 definitions:
   auth.LoginData:
     properties:
+      nickname:
+        description: Nickname 昵称
+        type: string
       token:
+        description: Token 登录令牌
         type: string
       user_id:
+        description: UserID 用户ID
         type: integer
       username:
+        description: Username 用户名
         type: string
     type: object
   auth.LoginRequest:
     properties:
       password:
+        description: Password 密码
         type: string
       username:
+        description: Username 用户名
         type: string
     type: object
   auth.LoginResponse:
@@ -28,26 +36,36 @@ definitions:
   auth.Menu:
     properties:
       children:
+        description: Children 子菜单
         items:
           $ref: '#/definitions/auth.Menu'
         type: array
       component:
+        description: Component 组件路径
         type: string
       hidden:
+        description: Hidden 是否隐藏
         type: boolean
       icon:
+        description: Icon 菜单图标
         type: string
       id:
+        description: ID 菜单ID
         type: integer
       name:
+        description: Name 菜单名称
         type: string
       parent_id:
+        description: ParentID 父菜单ID
         type: integer
       path:
+        description: Path 路由路径
         type: string
       permission_code:
+        description: PermissionCode 权限码
         type: string
       sort_order:
+        description: SortOrder 排序值
         type: integer
     type: object
   auth.MenusResponse:
@@ -63,9 +81,14 @@ definitions:
     type: object
   auth.ProfileData:
     properties:
+      nickname:
+        description: Nickname 昵称
+        type: string
       user_id:
+        description: UserID 用户ID
         type: integer
       username:
+        description: Username 用户名
         type: string
     type: object
   auth.ProfileResponse:
@@ -80,19 +103,31 @@ definitions:
   auth.RegisterData:
     properties:
       email:
+        description: Email 邮箱
+        type: string
+      nickname:
+        description: Nickname 昵称
         type: string
       user_id:
+        description: UserID 用户ID
         type: integer
       username:
+        description: Username 用户名
         type: string
     type: object
   auth.RegisterRequest:
     properties:
       email:
+        description: Email 邮箱
+        type: string
+      nickname:
+        description: Nickname 昵称
         type: string
       password:
+        description: Password 密码
         type: string
       username:
+        description: Username 用户名
         type: string
     type: object
   auth.RegisterResponse:
@@ -106,33 +141,79 @@ definitions:
     type: object
   goal.CreateGoalRequest:
     properties:
+      category:
+        description: Category 目标分类
+        type: string
       description:
+        description: Description 目标描述
+        type: string
+      target_deadline:
+        description: TargetDeadline 截止时间
         type: string
       title:
+        description: Title 目标标题
         type: string
     type: object
   goal.Goal:
     properties:
+      aggregate_status:
+        allOf:
+        - $ref: '#/definitions/goal.GoalStatus'
+        description: AggregateStatus 按任务聚合出来的目标状态
+        enum:
+        - draft
+        - active
+        - completed
+        - archived
+      category:
+        description: Category 目标分类
+        type: string
       created_at:
+        description: CreatedAt 创建时间
         type: string
       description:
+        description: Description 目标描述
         type: string
       id:
+        description: ID 目标ID
         type: integer
       status:
+        allOf:
+        - $ref: '#/definitions/goal.GoalStatus'
+        description: Status 目标状态
+        enum:
+        - draft
+        - active
+        - completed
+        - archived
+      target_deadline:
+        description: TargetDeadline 截止时间
         type: string
       title:
+        description: Title 目标标题
         type: string
       updated_at:
+        description: UpdatedAt 更新时间
         type: string
+      user_id:
+        description: UserID 用户ID
+        type: integer
     type: object
   goal.GoalListData:
     properties:
       list:
+        description: List 目标列表
         items:
           $ref: '#/definitions/goal.Goal'
         type: array
+      page:
+        description: Page 当前页
+        type: integer
+      page_size:
+        description: PageSize 每页条数
+        type: integer
       total:
+        description: Total 总数
         type: integer
     type: object
   goal.GoalListResponse:
@@ -153,10 +234,694 @@ definitions:
       message:
         type: string
     type: object
+  goal.GoalStatus:
+    enum:
+    - draft
+    - active
+    - completed
+    - archived
+    type: string
+    x-enum-varnames:
+    - GoalStatusDraft
+    - GoalStatusActive
+    - GoalStatusCompleted
+    - GoalStatusArchived
+  goal.UpdateGoalRequest:
+    properties:
+      category:
+        description: Category 目标分类
+        type: string
+      description:
+        description: Description 目标描述
+        type: string
+      target_deadline:
+        description: TargetDeadline 截止时间
+        type: string
+      title:
+        description: Title 目标标题
+        type: string
+    type: object
+  goal.UpdateGoalStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/goal.GoalStatus'
+        description: Status 目标状态
+        enum:
+        - draft
+        - active
+        - completed
+        - archived
+    type: object
+  menu.CreateMenuRequest:
+    properties:
+      component:
+        description: Component 组件路径
+        type: string
+      hidden:
+        description: Hidden 是否隐藏
+        type: boolean
+      icon:
+        description: Icon 菜单图标
+        type: string
+      name:
+        description: Name 菜单名称
+        type: string
+      parent_id:
+        description: ParentID 父菜单ID，0 表示顶级
+        type: integer
+      path:
+        description: Path 路由路径
+        type: string
+      permission_code:
+        description: PermissionCode 权限码
+        type: string
+      sort_order:
+        description: SortOrder 排序值
+        type: integer
+    type: object
+  menu.Menu:
+    properties:
+      children:
+        description: Children 子菜单
+        items:
+          $ref: '#/definitions/menu.Menu'
+        type: array
+      component:
+        description: Component 组件路径
+        type: string
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      hidden:
+        description: Hidden 是否隐藏
+        type: boolean
+      icon:
+        description: Icon 菜单图标
+        type: string
+      id:
+        description: ID 菜单ID
+        type: integer
+      name:
+        description: Name 菜单名称
+        type: string
+      parent_id:
+        description: ParentID 父菜单ID
+        type: integer
+      path:
+        description: Path 路由路径
+        type: string
+      permission_code:
+        description: PermissionCode 权限码
+        type: string
+      sort_order:
+        description: SortOrder 排序值
+        type: integer
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  menu.MenuListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/menu.Menu'
+        type: array
+      message:
+        type: string
+    type: object
+  menu.MenuResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/menu.Menu'
+      message:
+        type: string
+    type: object
+  menu.UpdateMenuRequest:
+    properties:
+      component:
+        description: Component 组件路径
+        type: string
+      hidden:
+        description: Hidden 是否隐藏
+        type: boolean
+      icon:
+        description: Icon 菜单图标
+        type: string
+      name:
+        description: Name 菜单名称
+        type: string
+      parent_id:
+        description: ParentID 父菜单ID，0 表示顶级
+        type: integer
+      path:
+        description: Path 路由路径
+        type: string
+      permission_code:
+        description: PermissionCode 权限码
+        type: string
+      sort_order:
+        description: SortOrder 排序值
+        type: integer
+    type: object
+  plan.Phase:
+    properties:
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      description:
+        description: Description 阶段描述
+        type: string
+      id:
+        description: ID 阶段ID
+        type: integer
+      plan_id:
+        description: PlanID 所属计划ID
+        type: integer
+      sort_order:
+        description: SortOrder 阶段顺序
+        type: integer
+      tasks:
+        description: Tasks 任务列表
+        items:
+          $ref: '#/definitions/plan.Task'
+        type: array
+      title:
+        description: Title 阶段标题
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  plan.Plan:
+    properties:
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      goal_id:
+        description: GoalID 目标ID
+        type: integer
+      id:
+        description: ID 计划ID
+        type: integer
+      overview:
+        description: Overview 计划概述
+        type: string
+      phases:
+        description: Phases 阶段列表
+        items:
+          $ref: '#/definitions/plan.Phase'
+        type: array
+      title:
+        description: Title 计划标题
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+      user_id:
+        description: UserID 用户ID
+        type: integer
+    type: object
+  plan.PlanResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/plan.Plan'
+      message:
+        type: string
+    type: object
+  plan.Task:
+    properties:
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      deliverables:
+        description: Deliverables 交付物
+        type: string
+      description:
+        description: Description 任务描述
+        type: string
+      estimated_days:
+        description: EstimatedDays 预估天数
+        type: integer
+      id:
+        description: ID 任务ID
+        type: integer
+      phase_id:
+        description: PhaseID 所属阶段ID
+        type: integer
+      priority:
+        allOf:
+        - $ref: '#/definitions/plan.TaskPriority'
+        description: Priority 任务优先级
+        enum:
+        - high
+        - medium
+        - low
+      sort_order:
+        description: SortOrder 任务顺序
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/plan.TaskStatus'
+        description: Status 任务状态
+        enum:
+        - todo
+        - in_progress
+        - done
+      title:
+        description: Title 任务标题
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  plan.TaskPriority:
+    enum:
+    - high
+    - medium
+    - low
+    type: string
+    x-enum-varnames:
+    - TaskPriorityHigh
+    - TaskPriorityMedium
+    - TaskPriorityLow
+  plan.TaskStatus:
+    enum:
+    - todo
+    - in_progress
+    - done
+    type: string
+    x-enum-varnames:
+    - TaskStatusTodo
+    - TaskStatusInProgress
+    - TaskStatusDone
+  rbac.CreatePermissionRequest:
+    properties:
+      code:
+        description: Code 权限编码
+        type: string
+      name:
+        description: Name 权限名称
+        type: string
+    type: object
+  rbac.Permission:
+    properties:
+      code:
+        description: Code 权限编码
+        type: string
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      id:
+        description: ID 权限ID
+        type: integer
+      name:
+        description: Name 权限名称
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  rbac.PermissionListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/rbac.Permission'
+        type: array
+      message:
+        type: string
+    type: object
+  rbac.PermissionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/rbac.Permission'
+      message:
+        type: string
+    type: object
+  rbac.Role:
+    properties:
+      code:
+        description: Code 角色编码
+        type: string
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      id:
+        description: ID 角色ID
+        type: integer
+      name:
+        description: Name 角色名称
+        type: string
+      permission_ids:
+        description: PermissionIDs 当前角色绑定的权限ID列表
+        items:
+          type: integer
+        type: array
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  rbac.RoleListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/rbac.Role'
+        type: array
+      message:
+        type: string
+    type: object
+  rbac.RolePermissionIDsData:
+    properties:
+      permission_ids:
+        description: PermissionIDs 权限ID列表
+        items:
+          type: integer
+        type: array
+      role_id:
+        description: RoleID 角色ID
+        type: integer
+    type: object
+  rbac.RolePermissionIDsResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/rbac.RolePermissionIDsData'
+      message:
+        type: string
+    type: object
+  rbac.UpdatePermissionRequest:
+    properties:
+      code:
+        description: Code 权限编码
+        type: string
+      name:
+        description: Name 权限名称
+        type: string
+    type: object
+  rbac.UpdateRolePermissionsRequest:
+    properties:
+      permission_ids:
+        description: PermissionIDs 权限ID列表
+        items:
+          type: integer
+        type: array
+    type: object
+  response.Body:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
   response.ErrorBody:
     properties:
       code:
         type: integer
+      message:
+        type: string
+    type: object
+  task.CreateTaskRequest:
+    properties:
+      deliverables:
+        description: Deliverables 交付物
+        type: string
+      description:
+        description: Description 任务描述
+        type: string
+      estimated_days:
+        description: EstimatedDays 预估天数
+        type: integer
+      phase_id:
+        description: PhaseID 所属阶段ID
+        type: integer
+      priority:
+        allOf:
+        - $ref: '#/definitions/task.TaskPriority'
+        description: Priority 任务优先级：high 高，medium 中，low 低
+        enum:
+        - high
+        - medium
+        - low
+      sort_order:
+        description: SortOrder 任务顺序
+        type: integer
+      title:
+        description: Title 任务标题
+        type: string
+    type: object
+  task.DeleteTaskData:
+    properties:
+      deleted:
+        description: Deleted 是否已删除
+        type: boolean
+    type: object
+  task.DeleteTaskResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/task.DeleteTaskData'
+      message:
+        type: string
+    type: object
+  task.Task:
+    properties:
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      deliverables:
+        description: Deliverables 交付物
+        type: string
+      description:
+        description: Description 任务描述
+        type: string
+      estimated_days:
+        description: EstimatedDays 预估天数
+        type: integer
+      goal_id:
+        description: GoalID 所属目标ID
+        type: integer
+      goal_title:
+        description: GoalTitle 目标标题
+        type: string
+      id:
+        description: ID 任务ID
+        type: integer
+      phase_id:
+        description: PhaseID 所属阶段ID
+        type: integer
+      phase_title:
+        description: PhaseTitle 阶段标题
+        type: string
+      plan_id:
+        description: PlanID 所属计划ID
+        type: integer
+      priority:
+        allOf:
+        - $ref: '#/definitions/task.TaskPriority'
+        description: Priority 任务优先级
+        enum:
+        - high
+        - medium
+        - low
+      sort_order:
+        description: SortOrder 任务顺序
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/task.TaskStatus'
+        description: Status 任务状态
+        enum:
+        - todo
+        - in_progress
+        - done
+      title:
+        description: Title 任务标题
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  task.TaskListData:
+    properties:
+      list:
+        description: List 任务列表
+        items:
+          $ref: '#/definitions/task.Task'
+        type: array
+      page:
+        description: Page 当前页
+        type: integer
+      page_size:
+        description: PageSize 每页条数
+        type: integer
+      total:
+        description: Total 总数量
+        type: integer
+    type: object
+  task.TaskListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/task.TaskListData'
+      message:
+        type: string
+    type: object
+  task.TaskPriority:
+    enum:
+    - high
+    - medium
+    - low
+    type: string
+    x-enum-varnames:
+    - TaskPriorityHigh
+    - TaskPriorityMedium
+    - TaskPriorityLow
+  task.TaskResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/task.Task'
+      message:
+        type: string
+    type: object
+  task.TaskStatus:
+    enum:
+    - todo
+    - in_progress
+    - done
+    type: string
+    x-enum-varnames:
+    - TaskStatusTodo
+    - TaskStatusInProgress
+    - TaskStatusDone
+  task.UpdateTaskRequest:
+    properties:
+      deliverables:
+        description: Deliverables 交付物
+        type: string
+      description:
+        description: Description 任务描述
+        type: string
+      estimated_days:
+        description: EstimatedDays 预估天数
+        type: integer
+      phase_id:
+        description: PhaseID 所属阶段ID
+        type: integer
+      priority:
+        allOf:
+        - $ref: '#/definitions/task.TaskPriority'
+        description: Priority 任务优先级：high 高，medium 中，low 低
+        enum:
+        - high
+        - medium
+        - low
+      sort_order:
+        description: SortOrder 任务顺序
+        type: integer
+      title:
+        description: Title 任务标题
+        type: string
+    type: object
+  task.UpdateTaskStatusRequest:
+    properties:
+      status:
+        allOf:
+        - $ref: '#/definitions/task.TaskStatus'
+        description: Status 任务状态：todo 待开始，in_progress 进行中，done 已完成
+        enum:
+        - todo
+        - in_progress
+        - done
+    type: object
+  user.Role:
+    properties:
+      code:
+        description: Code 角色编码
+        type: string
+      id:
+        description: ID 角色ID
+        type: integer
+      name:
+        description: Name 角色名称
+        type: string
+    type: object
+  user.UpdateUserRolesRequest:
+    properties:
+      role_ids:
+        description: RoleIDs 角色ID列表
+        items:
+          type: integer
+        type: array
+    type: object
+  user.User:
+    properties:
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      email:
+        description: Email 邮箱
+        type: string
+      id:
+        description: ID 用户ID
+        type: integer
+      nickname:
+        description: Nickname 昵称
+        type: string
+      role_ids:
+        description: RoleIDs 已绑定角色ID
+        items:
+          type: integer
+        type: array
+      roles:
+        description: Roles 已绑定角色列表
+        items:
+          $ref: '#/definitions/user.Role'
+        type: array
+      status:
+        description: Status 用户状态
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+      username:
+        description: Username 用户名
+        type: string
+    type: object
+  user.UserListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/user.User'
+        type: array
+      message:
+        type: string
+    type: object
+  user.UserResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/user.User'
       message:
         type: string
     type: object
@@ -166,6 +931,492 @@ info:
   title: Goal Planner Backend API
   version: "1.0"
 paths:
+  /api/admin/menus:
+    get:
+      operationId: adminMenusList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.MenuListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取菜单列表
+      tags:
+      - menus
+    post:
+      consumes:
+      - application/json
+      operationId: adminMenuCreate
+      parameters:
+      - description: 菜单参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/menu.CreateMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 新增菜单
+      tags:
+      - menus
+  /api/admin/menus/{id}:
+    delete:
+      operationId: adminMenuDelete
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除菜单
+      tags:
+      - menus
+    get:
+      operationId: adminMenuGet
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取菜单详情
+      tags:
+      - menus
+    put:
+      consumes:
+      - application/json
+      operationId: adminMenuUpdate
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 菜单参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/menu.UpdateMenuRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/menu.MenuResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新菜单
+      tags:
+      - menus
+  /api/admin/permissions:
+    get:
+      operationId: adminPermissionsList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.PermissionListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取权限列表
+      tags:
+      - rbac
+    post:
+      consumes:
+      - application/json
+      operationId: adminPermissionCreate
+      parameters:
+      - description: 权限参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rbac.CreatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.PermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 新增权限
+      tags:
+      - rbac
+  /api/admin/permissions/{id}:
+    delete:
+      operationId: adminPermissionDelete
+      parameters:
+      - description: 权限ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除权限
+      tags:
+      - rbac
+    put:
+      consumes:
+      - application/json
+      operationId: adminPermissionUpdate
+      parameters:
+      - description: 权限ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 权限参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rbac.UpdatePermissionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.PermissionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新权限
+      tags:
+      - rbac
+  /api/admin/roles:
+    get:
+      operationId: adminRolesList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.RoleListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取角色列表
+      tags:
+      - rbac
+  /api/admin/roles/{id}/permissions:
+    get:
+      operationId: adminRolePermissionsGet
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.RolePermissionIDsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取角色权限绑定
+      tags:
+      - rbac
+    put:
+      consumes:
+      - application/json
+      operationId: adminRolePermissionsUpdate
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色权限参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rbac.UpdateRolePermissionsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.RolePermissionIDsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新角色权限绑定
+      tags:
+      - rbac
+  /api/admin/users:
+    get:
+      operationId: adminUsersList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取用户列表
+      tags:
+      - users
+  /api/admin/users/{id}/roles:
+    put:
+      consumes:
+      - application/json
+      operationId: adminUserRolesUpdate
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户角色参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserRolesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新用户角色
+      tags:
+      - users
   /api/auth/login:
     post:
       consumes:
@@ -279,6 +1530,15 @@ paths:
   /api/goals:
     get:
       operationId: goalsList
+      parameters:
+      - description: 页码，从1开始
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
@@ -286,10 +1546,20 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/goal.GoalListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
       summary: 获取目标列表
       tags:
       - goals
@@ -315,14 +1585,56 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
       summary: 创建目标
       tags:
       - goals
   /api/goals/{id}:
+    delete:
+      operationId: goalDelete
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除目标
+      tags:
+      - goals
     get:
       operationId: goalGet
       parameters:
@@ -342,6 +1654,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
         "404":
           description: Not Found
           schema:
@@ -350,9 +1666,464 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
       summary: 获取目标详情
       tags:
       - goals
+    put:
+      consumes:
+      - application/json
+      operationId: goalUpdate
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 目标参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/goal.UpdateGoalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goal.GoalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新目标
+      tags:
+      - goals
+  /api/goals/{id}/generate-plan:
+    post:
+      operationId: goalPlanGenerate
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 生成目标计划
+      tags:
+      - plans
+  /api/goals/{id}/plan:
+    get:
+      operationId: goalPlanGet
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取目标计划
+      tags:
+      - plans
+  /api/goals/{id}/regenerate-plan:
+    post:
+      operationId: goalPlanRegenerate
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 重新生成目标计划
+      tags:
+      - plans
+  /api/goals/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      operationId: goalUpdateStatus
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 目标状态参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/goal.UpdateGoalStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/goal.GoalResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新目标状态
+      tags:
+      - goals
+  /api/tasks:
+    get:
+      operationId: tasksList
+      parameters:
+      - description: 任务状态
+        in: query
+        name: status
+        type: string
+      - description: 目标ID
+        in: query
+        name: goal_id
+        type: integer
+      - description: 阶段ID
+        in: query
+        name: phase_id
+        type: integer
+      - description: 页码，从1开始
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.TaskListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取任务列表
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      operationId: taskCreate
+      parameters:
+      - description: 任务信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 新增任务
+      tags:
+      - tasks
+  /api/tasks/{id}:
+    delete:
+      operationId: taskDelete
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.DeleteTaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除任务
+      tags:
+      - tasks
+    get:
+      operationId: taskGet
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取任务详情
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      operationId: taskUpdate
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 编辑任务
+      tags:
+      - tasks
+  /api/tasks/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      operationId: taskUpdateStatus
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务状态
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.UpdateTaskStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.TaskResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 更新任务状态
+      tags:
+      - tasks
 schemes:
 - http
 securityDefinitions:

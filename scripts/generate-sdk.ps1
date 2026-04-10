@@ -20,7 +20,9 @@ try {
         -i ./docs/swagger.json `
         -g typescript-axios `
         -o ./sdk/typescript-axios `
-        "--additional-properties=npmName=@goal-planner/backend-sdk,npmVersion=1.0.0,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useSingleRequestParameter=true"
+        "--additional-properties=npmName=@goal-planner/backend-sdk,npmVersion=1.0.0,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useSingleRequestParameter=true,stringEnums=true"
+
+    & (Join-Path $PSScriptRoot "postprocess-sdk.ps1")
 }
 finally {
     Pop-Location

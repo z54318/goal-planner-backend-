@@ -28,6 +28,12 @@ import type { GoalGoalListResponse } from '../models';
 // @ts-ignore
 import type { GoalGoalResponse } from '../models';
 // @ts-ignore
+import type { GoalUpdateGoalRequest } from '../models';
+// @ts-ignore
+import type { GoalUpdateGoalStatusRequest } from '../models';
+// @ts-ignore
+import type { ResponseBody } from '../models';
+// @ts-ignore
 import type { ResponseErrorBody } from '../models';
 /**
  * GoalsApi - axios parameter creator
@@ -56,6 +62,9 @@ export const GoalsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
             localVarHeaderParameter['Content-Type'] = 'application/json';
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -63,6 +72,43 @@ export const GoalsApiAxiosParamCreator = function (configuration?: Configuration
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 删除目标
+         * @param {number} id 目标ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalDelete: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('goalDelete', 'id', id)
+            const localVarPath = `/api/goals/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -92,6 +138,9 @@ export const GoalsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
             localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -105,11 +154,97 @@ export const GoalsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary 获取目标列表
+         * @summary 更新目标
+         * @param {number} id 目标ID
+         * @param {GoalUpdateGoalRequest} request 目标参数
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        goalsList: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        goalUpdate: async (id: number, request: GoalUpdateGoalRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('goalUpdate', 'id', id)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('goalUpdate', 'request', request)
+            const localVarPath = `/api/goals/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 更新目标状态
+         * @param {number} id 目标ID
+         * @param {GoalUpdateGoalStatusRequest} request 目标状态参数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalUpdateStatus: async (id: number, request: GoalUpdateGoalStatusRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('goalUpdateStatus', 'id', id)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('goalUpdateStatus', 'request', request)
+            const localVarPath = `/api/goals/{id}/status`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 获取目标列表
+         * @param {number} [page] 页码，从1开始
+         * @param {number} [pageSize] 每页条数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalsList: async (page?: number, pageSize?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/goals`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -121,6 +256,17 @@ export const GoalsApiAxiosParamCreator = function (configuration?: Configuration
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (pageSize !== undefined) {
+                localVarQueryParameter['page_size'] = pageSize;
+            }
 
             localVarHeaderParameter['Accept'] = 'application/json';
 
@@ -157,6 +303,19 @@ export const GoalsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 删除目标
+         * @param {number} id 目标ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async goalDelete(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResponseBody>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.goalDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GoalsApi.goalDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary 获取目标详情
          * @param {number} id 目标ID
          * @param {*} [options] Override http request option.
@@ -170,12 +329,42 @@ export const GoalsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary 获取目标列表
+         * @summary 更新目标
+         * @param {number} id 目标ID
+         * @param {GoalUpdateGoalRequest} request 目标参数
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async goalsList(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GoalGoalListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.goalsList(options);
+        async goalUpdate(id: number, request: GoalUpdateGoalRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GoalGoalResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.goalUpdate(id, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GoalsApi.goalUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 更新目标状态
+         * @param {number} id 目标ID
+         * @param {GoalUpdateGoalStatusRequest} request 目标状态参数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async goalUpdateStatus(id: number, request: GoalUpdateGoalStatusRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GoalGoalResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.goalUpdateStatus(id, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GoalsApi.goalUpdateStatus']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 获取目标列表
+         * @param {number} [page] 页码，从1开始
+         * @param {number} [pageSize] 每页条数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async goalsList(page?: number, pageSize?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GoalGoalListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.goalsList(page, pageSize, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['GoalsApi.goalsList']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -201,6 +390,16 @@ export const GoalsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary 删除目标
+         * @param {GoalsApiGoalDeleteRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalDelete(requestParameters: GoalsApiGoalDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResponseBody> {
+            return localVarFp.goalDelete(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 获取目标详情
          * @param {GoalsApiGoalGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -211,12 +410,33 @@ export const GoalsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary 获取目标列表
+         * @summary 更新目标
+         * @param {GoalsApiGoalUpdateRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        goalsList(options?: RawAxiosRequestConfig): AxiosPromise<GoalGoalListResponse> {
-            return localVarFp.goalsList(options).then((request) => request(axios, basePath));
+        goalUpdate(requestParameters: GoalsApiGoalUpdateRequest, options?: RawAxiosRequestConfig): AxiosPromise<GoalGoalResponse> {
+            return localVarFp.goalUpdate(requestParameters.id, requestParameters.request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 更新目标状态
+         * @param {GoalsApiGoalUpdateStatusRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalUpdateStatus(requestParameters: GoalsApiGoalUpdateStatusRequest, options?: RawAxiosRequestConfig): AxiosPromise<GoalGoalResponse> {
+            return localVarFp.goalUpdateStatus(requestParameters.id, requestParameters.request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 获取目标列表
+         * @param {GoalsApiGoalsListRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalsList(requestParameters: GoalsApiGoalsListRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<GoalGoalListResponse> {
+            return localVarFp.goalsList(requestParameters.page, requestParameters.pageSize, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -232,6 +452,16 @@ export interface GoalsApiGoalCreateRequest {
 }
 
 /**
+ * Request parameters for goalDelete operation in GoalsApi.
+ */
+export interface GoalsApiGoalDeleteRequest {
+    /**
+     * 目标ID
+     */
+    readonly id: number
+}
+
+/**
  * Request parameters for goalGet operation in GoalsApi.
  */
 export interface GoalsApiGoalGetRequest {
@@ -239,6 +469,51 @@ export interface GoalsApiGoalGetRequest {
      * 目标ID
      */
     readonly id: number
+}
+
+/**
+ * Request parameters for goalUpdate operation in GoalsApi.
+ */
+export interface GoalsApiGoalUpdateRequest {
+    /**
+     * 目标ID
+     */
+    readonly id: number
+
+    /**
+     * 目标参数
+     */
+    readonly request: GoalUpdateGoalRequest
+}
+
+/**
+ * Request parameters for goalUpdateStatus operation in GoalsApi.
+ */
+export interface GoalsApiGoalUpdateStatusRequest {
+    /**
+     * 目标ID
+     */
+    readonly id: number
+
+    /**
+     * 目标状态参数
+     */
+    readonly request: GoalUpdateGoalStatusRequest
+}
+
+/**
+ * Request parameters for goalsList operation in GoalsApi.
+ */
+export interface GoalsApiGoalsListRequest {
+    /**
+     * 页码，从1开始
+     */
+    readonly page?: number
+
+    /**
+     * 每页条数
+     */
+    readonly pageSize?: number
 }
 
 /**
@@ -258,6 +533,17 @@ export class GoalsApi extends BaseAPI {
 
     /**
      * 
+     * @summary 删除目标
+     * @param {GoalsApiGoalDeleteRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public goalDelete(requestParameters: GoalsApiGoalDeleteRequest, options?: RawAxiosRequestConfig) {
+        return GoalsApiFp(this.configuration).goalDelete(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary 获取目标详情
      * @param {GoalsApiGoalGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -269,12 +555,35 @@ export class GoalsApi extends BaseAPI {
 
     /**
      * 
-     * @summary 获取目标列表
+     * @summary 更新目标
+     * @param {GoalsApiGoalUpdateRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public goalsList(options?: RawAxiosRequestConfig) {
-        return GoalsApiFp(this.configuration).goalsList(options).then((request) => request(this.axios, this.basePath));
+    public goalUpdate(requestParameters: GoalsApiGoalUpdateRequest, options?: RawAxiosRequestConfig) {
+        return GoalsApiFp(this.configuration).goalUpdate(requestParameters.id, requestParameters.request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 更新目标状态
+     * @param {GoalsApiGoalUpdateStatusRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public goalUpdateStatus(requestParameters: GoalsApiGoalUpdateStatusRequest, options?: RawAxiosRequestConfig) {
+        return GoalsApiFp(this.configuration).goalUpdateStatus(requestParameters.id, requestParameters.request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 获取目标列表
+     * @param {GoalsApiGoalsListRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public goalsList(requestParameters: GoalsApiGoalsListRequest = {}, options?: RawAxiosRequestConfig) {
+        return GoalsApiFp(this.configuration).goalsList(requestParameters.page, requestParameters.pageSize, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

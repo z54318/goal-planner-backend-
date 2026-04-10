@@ -15,7 +15,21 @@
 
 
 export interface GoalCreateGoalRequest {
+    /**
+     * Category 目标分类
+     */
+    'category'?: string;
+    /**
+     * Description 目标描述
+     */
     'description'?: string;
+    /**
+     * TargetDeadline 截止时间
+     */
+    'target_deadline'?: string;
+    /**
+     * Title 目标标题
+     */
     'title'?: string;
 }
 

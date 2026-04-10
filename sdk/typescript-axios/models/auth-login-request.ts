@@ -15,7 +15,13 @@
 
 
 export interface AuthLoginRequest {
+    /**
+     * Password 密码
+     */
     'password'?: string;
+    /**
+     * Username 用户名
+     */
     'username'?: string;
 }
 

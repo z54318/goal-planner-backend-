@@ -5,8 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**user_id** | **number** |  | [optional] [default to undefined]
-**username** | **string** |  | [optional] [default to undefined]
+**nickname** | **string** | Nickname 昵称 | [optional] [default to undefined]
+**user_id** | **number** | UserID 用户ID | [optional] [default to undefined]
+**username** | **string** | Username 用户名 | [optional] [default to undefined]
 
 ## Example
 
@@ -14,6 +15,7 @@ Name | Type | Description | Notes
 import { AuthProfileData } from '@goal-planner/backend-sdk';
 
 const instance: AuthProfileData = {
+    nickname,
     user_id,
     username,
 };

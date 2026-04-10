@@ -15,15 +15,45 @@
 
 
 export interface AuthMenu {
+    /**
+     * Children 子菜单
+     */
     'children'?: Array<AuthMenu>;
+    /**
+     * Component 组件路径
+     */
     'component'?: string;
+    /**
+     * Hidden 是否隐藏
+     */
     'hidden'?: boolean;
+    /**
+     * Icon 菜单图标
+     */
     'icon'?: string;
+    /**
+     * ID 菜单ID
+     */
     'id'?: number;
+    /**
+     * Name 菜单名称
+     */
     'name'?: string;
+    /**
+     * ParentID 父菜单ID
+     */
     'parent_id'?: number;
+    /**
+     * Path 路由路径
+     */
     'path'?: string;
+    /**
+     * PermissionCode 权限码
+     */
     'permission_code'?: string;
+    /**
+     * SortOrder 排序值
+     */
     'sort_order'?: number;
 }
 

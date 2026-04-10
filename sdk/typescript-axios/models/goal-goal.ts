@@ -13,13 +13,52 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GoalGoalStatus } from './goal-goal-status';
 
 export interface GoalGoal {
+    /**
+     * AggregateStatus 按任务聚合出来的目标状态
+     */
+    'aggregate_status'?: GoalGoalStatus;
+    /**
+     * Category 目标分类
+     */
+    'category'?: string;
+    /**
+     * CreatedAt 创建时间
+     */
     'created_at'?: string;
+    /**
+     * Description 目标描述
+     */
     'description'?: string;
+    /**
+     * ID 目标ID
+     */
     'id'?: number;
-    'status'?: string;
+    /**
+     * Status 目标状态
+     */
+    'status'?: GoalGoalStatus;
+    /**
+     * TargetDeadline 截止时间
+     */
+    'target_deadline'?: string;
+    /**
+     * Title 目标标题
+     */
     'title'?: string;
+    /**
+     * UpdatedAt 更新时间
+     */
     'updated_at'?: string;
+    /**
+     * UserID 用户ID
+     */
+    'user_id'?: number;
 }
+
+
 

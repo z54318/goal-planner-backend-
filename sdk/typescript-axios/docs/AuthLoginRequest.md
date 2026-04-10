@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**password** | **string** |  | [optional] [default to undefined]
-**username** | **string** |  | [optional] [default to undefined]
+**password** | **string** | Password 密码 | [optional] [default to undefined]
+**username** | **string** | Username 用户名 | [optional] [default to undefined]
 
 ## Example
 

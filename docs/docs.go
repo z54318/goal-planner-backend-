@@ -15,6 +15,768 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/admin/menus": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menus"
+                ],
+                "summary": "获取菜单列表",
+                "operationId": "adminMenusList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.MenuListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menus"
+                ],
+                "summary": "新增菜单",
+                "operationId": "adminMenuCreate",
+                "parameters": [
+                    {
+                        "description": "菜单参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/menu.CreateMenuRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.MenuResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/menus/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menus"
+                ],
+                "summary": "获取菜单详情",
+                "operationId": "adminMenuGet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.MenuResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menus"
+                ],
+                "summary": "更新菜单",
+                "operationId": "adminMenuUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "菜单参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/menu.UpdateMenuRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/menu.MenuResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "menus"
+                ],
+                "summary": "删除菜单",
+                "operationId": "adminMenuDelete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Body"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/permissions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "获取权限列表",
+                "operationId": "adminPermissionsList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rbac.PermissionListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "新增权限",
+                "operationId": "adminPermissionCreate",
+                "parameters": [
+                    {
+                        "description": "权限参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rbac.CreatePermissionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rbac.PermissionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/permissions/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "更新权限",
+                "operationId": "adminPermissionUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "权限ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "权限参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rbac.UpdatePermissionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rbac.PermissionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "删除权限",
+                "operationId": "adminPermissionDelete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "权限ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Body"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/roles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "获取角色列表",
+                "operationId": "adminRolesList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rbac.RoleListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/roles/{id}/permissions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "获取角色权限绑定",
+                "operationId": "adminRolePermissionsGet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rbac.RolePermissionIDsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rbac"
+                ],
+                "summary": "更新角色权限绑定",
+                "operationId": "adminRolePermissionsUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "角色权限参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rbac.UpdateRolePermissionsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/rbac.RolePermissionIDsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/users": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "获取用户列表",
+                "operationId": "adminUsersList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserListResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/admin/users/{id}/roles": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "更新用户角色",
+                "operationId": "adminUserRolesUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "用户角色参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateUserRolesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/user.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "consumes": [
@@ -189,6 +951,11 @@ const docTemplate = `{
         },
         "/api/goals": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -197,11 +964,37 @@ const docTemplate = `{
                 ],
                 "summary": "获取目标列表",
                 "operationId": "goalsList",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码，从1开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/goal.GoalListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
                         }
                     },
                     "500": {
@@ -213,6 +1006,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -248,6 +1046,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.ErrorBody"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -259,6 +1063,11 @@ const docTemplate = `{
         },
         "/api/goals/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -289,6 +1098,774 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.ErrorBody"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "goals"
+                ],
+                "summary": "更新目标",
+                "operationId": "goalUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "目标参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/goal.UpdateGoalRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/goal.GoalResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "goals"
+                ],
+                "summary": "删除目标",
+                "operationId": "goalDelete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Body"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/goals/{id}/generate-plan": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "生成目标计划",
+                "operationId": "goalPlanGenerate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plan.PlanResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/goals/{id}/plan": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "获取目标计划",
+                "operationId": "goalPlanGet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plan.PlanResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/goals/{id}/regenerate-plan": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "重新生成目标计划",
+                "operationId": "goalPlanRegenerate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plan.PlanResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/goals/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "goals"
+                ],
+                "summary": "更新目标状态",
+                "operationId": "goalUpdateStatus",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "目标状态参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/goal.UpdateGoalStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/goal.GoalResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "获取任务列表",
+                "operationId": "tasksList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "任务状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "goal_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "阶段ID",
+                        "name": "phase_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码，从1开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页条数",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.TaskListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "新增任务",
+                "operationId": "taskCreate",
+                "parameters": [
+                    {
+                        "description": "任务信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.CreateTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "获取任务详情",
+                "operationId": "taskGet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "编辑任务",
+                "operationId": "taskUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "任务信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.UpdateTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "删除任务",
+                "operationId": "taskDelete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.DeleteTaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tasks/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "更新任务状态",
+                "operationId": "taskUpdateStatus",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "任务状态",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.UpdateTaskStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.TaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -309,13 +1886,20 @@ const docTemplate = `{
         "auth.LoginData": {
             "type": "object",
             "properties": {
+                "nickname": {
+                    "description": "Nickname 昵称",
+                    "type": "string"
+                },
                 "token": {
+                    "description": "Token 登录令牌",
                     "type": "string"
                 },
                 "user_id": {
+                    "description": "UserID 用户ID",
                     "type": "integer"
                 },
                 "username": {
+                    "description": "Username 用户名",
                     "type": "string"
                 }
             }
@@ -324,9 +1908,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "password": {
+                    "description": "Password 密码",
                     "type": "string"
                 },
                 "username": {
+                    "description": "Username 用户名",
                     "type": "string"
                 }
             }
@@ -349,36 +1935,46 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "children": {
+                    "description": "Children 子菜单",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/auth.Menu"
                     }
                 },
                 "component": {
+                    "description": "Component 组件路径",
                     "type": "string"
                 },
                 "hidden": {
+                    "description": "Hidden 是否隐藏",
                     "type": "boolean"
                 },
                 "icon": {
+                    "description": "Icon 菜单图标",
                     "type": "string"
                 },
                 "id": {
+                    "description": "ID 菜单ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "Name 菜单名称",
                     "type": "string"
                 },
                 "parent_id": {
+                    "description": "ParentID 父菜单ID",
                     "type": "integer"
                 },
                 "path": {
+                    "description": "Path 路由路径",
                     "type": "string"
                 },
                 "permission_code": {
+                    "description": "PermissionCode 权限码",
                     "type": "string"
                 },
                 "sort_order": {
+                    "description": "SortOrder 排序值",
                     "type": "integer"
                 }
             }
@@ -403,10 +1999,16 @@ const docTemplate = `{
         "auth.ProfileData": {
             "type": "object",
             "properties": {
+                "nickname": {
+                    "description": "Nickname 昵称",
+                    "type": "string"
+                },
                 "user_id": {
+                    "description": "UserID 用户ID",
                     "type": "integer"
                 },
                 "username": {
+                    "description": "Username 用户名",
                     "type": "string"
                 }
             }
@@ -429,12 +2031,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "description": "Email 邮箱",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "Nickname 昵称",
                     "type": "string"
                 },
                 "user_id": {
+                    "description": "UserID 用户ID",
                     "type": "integer"
                 },
                 "username": {
+                    "description": "Username 用户名",
                     "type": "string"
                 }
             }
@@ -443,12 +2052,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "description": "Email 邮箱",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "Nickname 昵称",
                     "type": "string"
                 },
                 "password": {
+                    "description": "Password 密码",
                     "type": "string"
                 },
                 "username": {
+                    "description": "Username 用户名",
                     "type": "string"
                 }
             }
@@ -470,10 +2086,20 @@ const docTemplate = `{
         "goal.CreateGoalRequest": {
             "type": "object",
             "properties": {
+                "category": {
+                    "description": "Category 目标分类",
+                    "type": "string"
+                },
                 "description": {
+                    "description": "Description 目标描述",
+                    "type": "string"
+                },
+                "target_deadline": {
+                    "description": "TargetDeadline 截止时间",
                     "type": "string"
                 },
                 "title": {
+                    "description": "Title 目标标题",
                     "type": "string"
                 }
             }
@@ -481,23 +2107,65 @@ const docTemplate = `{
         "goal.Goal": {
             "type": "object",
             "properties": {
+                "aggregate_status": {
+                    "description": "AggregateStatus 按任务聚合出来的目标状态",
+                    "enum": [
+                        "draft",
+                        "active",
+                        "completed",
+                        "archived"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/goal.GoalStatus"
+                        }
+                    ]
+                },
+                "category": {
+                    "description": "Category 目标分类",
+                    "type": "string"
+                },
                 "created_at": {
+                    "description": "CreatedAt 创建时间",
                     "type": "string"
                 },
                 "description": {
+                    "description": "Description 目标描述",
                     "type": "string"
                 },
                 "id": {
+                    "description": "ID 目标ID",
                     "type": "integer"
                 },
                 "status": {
+                    "description": "Status 目标状态",
+                    "enum": [
+                        "draft",
+                        "active",
+                        "completed",
+                        "archived"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/goal.GoalStatus"
+                        }
+                    ]
+                },
+                "target_deadline": {
+                    "description": "TargetDeadline 截止时间",
                     "type": "string"
                 },
                 "title": {
+                    "description": "Title 目标标题",
                     "type": "string"
                 },
                 "updated_at": {
+                    "description": "UpdatedAt 更新时间",
                     "type": "string"
+                },
+                "user_id": {
+                    "description": "UserID 用户ID",
+                    "type": "integer"
                 }
             }
         },
@@ -505,12 +2173,22 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "list": {
+                    "description": "List 目标列表",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/goal.Goal"
                     }
                 },
+                "page": {
+                    "description": "Page 当前页",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "PageSize 每页条数",
+                    "type": "integer"
+                },
                 "total": {
+                    "description": "Total 总数",
                     "type": "integer"
                 }
             }
@@ -543,11 +2221,992 @@ const docTemplate = `{
                 }
             }
         },
+        "goal.GoalStatus": {
+            "type": "string",
+            "enum": [
+                "draft",
+                "active",
+                "completed",
+                "archived"
+            ],
+            "x-enum-varnames": [
+                "GoalStatusDraft",
+                "GoalStatusActive",
+                "GoalStatusCompleted",
+                "GoalStatusArchived"
+            ]
+        },
+        "goal.UpdateGoalRequest": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "description": "Category 目标分类",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 目标描述",
+                    "type": "string"
+                },
+                "target_deadline": {
+                    "description": "TargetDeadline 截止时间",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Title 目标标题",
+                    "type": "string"
+                }
+            }
+        },
+        "goal.UpdateGoalStatusRequest": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status 目标状态",
+                    "enum": [
+                        "draft",
+                        "active",
+                        "completed",
+                        "archived"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/goal.GoalStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "menu.CreateMenuRequest": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "Component 组件路径",
+                    "type": "string"
+                },
+                "hidden": {
+                    "description": "Hidden 是否隐藏",
+                    "type": "boolean"
+                },
+                "icon": {
+                    "description": "Icon 菜单图标",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name 菜单名称",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "ParentID 父菜单ID，0 表示顶级",
+                    "type": "integer"
+                },
+                "path": {
+                    "description": "Path 路由路径",
+                    "type": "string"
+                },
+                "permission_code": {
+                    "description": "PermissionCode 权限码",
+                    "type": "string"
+                },
+                "sort_order": {
+                    "description": "SortOrder 排序值",
+                    "type": "integer"
+                }
+            }
+        },
+        "menu.Menu": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "Children 子菜单",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/menu.Menu"
+                    }
+                },
+                "component": {
+                    "description": "Component 组件路径",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "hidden": {
+                    "description": "Hidden 是否隐藏",
+                    "type": "boolean"
+                },
+                "icon": {
+                    "description": "Icon 菜单图标",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 菜单ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name 菜单名称",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "ParentID 父菜单ID",
+                    "type": "integer"
+                },
+                "path": {
+                    "description": "Path 路由路径",
+                    "type": "string"
+                },
+                "permission_code": {
+                    "description": "PermissionCode 权限码",
+                    "type": "string"
+                },
+                "sort_order": {
+                    "description": "SortOrder 排序值",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "menu.MenuListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/menu.Menu"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "menu.MenuResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/menu.Menu"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "menu.UpdateMenuRequest": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "Component 组件路径",
+                    "type": "string"
+                },
+                "hidden": {
+                    "description": "Hidden 是否隐藏",
+                    "type": "boolean"
+                },
+                "icon": {
+                    "description": "Icon 菜单图标",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name 菜单名称",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "ParentID 父菜单ID，0 表示顶级",
+                    "type": "integer"
+                },
+                "path": {
+                    "description": "Path 路由路径",
+                    "type": "string"
+                },
+                "permission_code": {
+                    "description": "PermissionCode 权限码",
+                    "type": "string"
+                },
+                "sort_order": {
+                    "description": "SortOrder 排序值",
+                    "type": "integer"
+                }
+            }
+        },
+        "plan.Phase": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 阶段描述",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 阶段ID",
+                    "type": "integer"
+                },
+                "plan_id": {
+                    "description": "PlanID 所属计划ID",
+                    "type": "integer"
+                },
+                "sort_order": {
+                    "description": "SortOrder 阶段顺序",
+                    "type": "integer"
+                },
+                "tasks": {
+                    "description": "Tasks 任务列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/plan.Task"
+                    }
+                },
+                "title": {
+                    "description": "Title 阶段标题",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "plan.Plan": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "goal_id": {
+                    "description": "GoalID 目标ID",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "ID 计划ID",
+                    "type": "integer"
+                },
+                "overview": {
+                    "description": "Overview 计划概述",
+                    "type": "string"
+                },
+                "phases": {
+                    "description": "Phases 阶段列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/plan.Phase"
+                    }
+                },
+                "title": {
+                    "description": "Title 计划标题",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserID 用户ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "plan.PlanResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/plan.Plan"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "plan.Task": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "deliverables": {
+                    "description": "Deliverables 交付物",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 任务描述",
+                    "type": "string"
+                },
+                "estimated_days": {
+                    "description": "EstimatedDays 预估天数",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "ID 任务ID",
+                    "type": "integer"
+                },
+                "phase_id": {
+                    "description": "PhaseID 所属阶段ID",
+                    "type": "integer"
+                },
+                "priority": {
+                    "description": "Priority 任务优先级",
+                    "enum": [
+                        "high",
+                        "medium",
+                        "low"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/plan.TaskPriority"
+                        }
+                    ]
+                },
+                "sort_order": {
+                    "description": "SortOrder 任务顺序",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "Status 任务状态",
+                    "enum": [
+                        "todo",
+                        "in_progress",
+                        "done"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/plan.TaskStatus"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "Title 任务标题",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "plan.TaskPriority": {
+            "type": "string",
+            "enum": [
+                "high",
+                "medium",
+                "low"
+            ],
+            "x-enum-varnames": [
+                "TaskPriorityHigh",
+                "TaskPriorityMedium",
+                "TaskPriorityLow"
+            ]
+        },
+        "plan.TaskStatus": {
+            "type": "string",
+            "enum": [
+                "todo",
+                "in_progress",
+                "done"
+            ],
+            "x-enum-varnames": [
+                "TaskStatusTodo",
+                "TaskStatusInProgress",
+                "TaskStatusDone"
+            ]
+        },
+        "rbac.CreatePermissionRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code 权限编码",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name 权限名称",
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.Permission": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code 权限编码",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 权限ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name 权限名称",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.PermissionListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rbac.Permission"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.PermissionResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/rbac.Permission"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.Role": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code 角色编码",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 角色ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name 角色名称",
+                    "type": "string"
+                },
+                "permission_ids": {
+                    "description": "PermissionIDs 当前角色绑定的权限ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.RoleListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/rbac.Role"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.RolePermissionIDsData": {
+            "type": "object",
+            "properties": {
+                "permission_ids": {
+                    "description": "PermissionIDs 权限ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "role_id": {
+                    "description": "RoleID 角色ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "rbac.RolePermissionIDsResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/rbac.RolePermissionIDsData"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.UpdatePermissionRequest": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code 权限编码",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name 权限名称",
+                    "type": "string"
+                }
+            }
+        },
+        "rbac.UpdateRolePermissionsRequest": {
+            "type": "object",
+            "properties": {
+                "permission_ids": {
+                    "description": "PermissionIDs 权限ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "response.Body": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "response.ErrorBody": {
             "type": "object",
             "properties": {
                 "code": {
                     "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "task.CreateTaskRequest": {
+            "type": "object",
+            "properties": {
+                "deliverables": {
+                    "description": "Deliverables 交付物",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 任务描述",
+                    "type": "string"
+                },
+                "estimated_days": {
+                    "description": "EstimatedDays 预估天数",
+                    "type": "integer"
+                },
+                "phase_id": {
+                    "description": "PhaseID 所属阶段ID",
+                    "type": "integer"
+                },
+                "priority": {
+                    "description": "Priority 任务优先级：high 高，medium 中，low 低",
+                    "enum": [
+                        "high",
+                        "medium",
+                        "low"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/task.TaskPriority"
+                        }
+                    ]
+                },
+                "sort_order": {
+                    "description": "SortOrder 任务顺序",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Title 任务标题",
+                    "type": "string"
+                }
+            }
+        },
+        "task.DeleteTaskData": {
+            "type": "object",
+            "properties": {
+                "deleted": {
+                    "description": "Deleted 是否已删除",
+                    "type": "boolean"
+                }
+            }
+        },
+        "task.DeleteTaskResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/task.DeleteTaskData"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "task.Task": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "deliverables": {
+                    "description": "Deliverables 交付物",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 任务描述",
+                    "type": "string"
+                },
+                "estimated_days": {
+                    "description": "EstimatedDays 预估天数",
+                    "type": "integer"
+                },
+                "goal_id": {
+                    "description": "GoalID 所属目标ID",
+                    "type": "integer"
+                },
+                "goal_title": {
+                    "description": "GoalTitle 目标标题",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 任务ID",
+                    "type": "integer"
+                },
+                "phase_id": {
+                    "description": "PhaseID 所属阶段ID",
+                    "type": "integer"
+                },
+                "phase_title": {
+                    "description": "PhaseTitle 阶段标题",
+                    "type": "string"
+                },
+                "plan_id": {
+                    "description": "PlanID 所属计划ID",
+                    "type": "integer"
+                },
+                "priority": {
+                    "description": "Priority 任务优先级",
+                    "enum": [
+                        "high",
+                        "medium",
+                        "low"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/task.TaskPriority"
+                        }
+                    ]
+                },
+                "sort_order": {
+                    "description": "SortOrder 任务顺序",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "Status 任务状态",
+                    "enum": [
+                        "todo",
+                        "in_progress",
+                        "done"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/task.TaskStatus"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "Title 任务标题",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "task.TaskListData": {
+            "type": "object",
+            "properties": {
+                "list": {
+                    "description": "List 任务列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.Task"
+                    }
+                },
+                "page": {
+                    "description": "Page 当前页",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "PageSize 每页条数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "Total 总数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "task.TaskListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/task.TaskListData"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "task.TaskPriority": {
+            "type": "string",
+            "enum": [
+                "high",
+                "medium",
+                "low"
+            ],
+            "x-enum-varnames": [
+                "TaskPriorityHigh",
+                "TaskPriorityMedium",
+                "TaskPriorityLow"
+            ]
+        },
+        "task.TaskResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/task.Task"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "task.TaskStatus": {
+            "type": "string",
+            "enum": [
+                "todo",
+                "in_progress",
+                "done"
+            ],
+            "x-enum-varnames": [
+                "TaskStatusTodo",
+                "TaskStatusInProgress",
+                "TaskStatusDone"
+            ]
+        },
+        "task.UpdateTaskRequest": {
+            "type": "object",
+            "properties": {
+                "deliverables": {
+                    "description": "Deliverables 交付物",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 任务描述",
+                    "type": "string"
+                },
+                "estimated_days": {
+                    "description": "EstimatedDays 预估天数",
+                    "type": "integer"
+                },
+                "phase_id": {
+                    "description": "PhaseID 所属阶段ID",
+                    "type": "integer"
+                },
+                "priority": {
+                    "description": "Priority 任务优先级：high 高，medium 中，low 低",
+                    "enum": [
+                        "high",
+                        "medium",
+                        "low"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/task.TaskPriority"
+                        }
+                    ]
+                },
+                "sort_order": {
+                    "description": "SortOrder 任务顺序",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Title 任务标题",
+                    "type": "string"
+                }
+            }
+        },
+        "task.UpdateTaskStatusRequest": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "Status 任务状态：todo 待开始，in_progress 进行中，done 已完成",
+                    "enum": [
+                        "todo",
+                        "in_progress",
+                        "done"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/task.TaskStatus"
+                        }
+                    ]
+                }
+            }
+        },
+        "user.Role": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code 角色编码",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 角色ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name 角色名称",
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateUserRolesRequest": {
+            "type": "object",
+            "properties": {
+                "role_ids": {
+                    "description": "RoleIDs 角色ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "user.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Email 邮箱",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID 用户ID",
+                    "type": "integer"
+                },
+                "nickname": {
+                    "description": "Nickname 昵称",
+                    "type": "string"
+                },
+                "role_ids": {
+                    "description": "RoleIDs 已绑定角色ID",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "roles": {
+                    "description": "Roles 已绑定角色列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.Role"
+                    }
+                },
+                "status": {
+                    "description": "Status 用户状态",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "Username 用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "user.UserListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/user.User"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.UserResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/user.User"
                 },
                 "message": {
                     "type": "string"

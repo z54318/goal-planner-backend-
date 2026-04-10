@@ -5,8 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**description** | **string** |  | [optional] [default to undefined]
-**title** | **string** |  | [optional] [default to undefined]
+**category** | **string** | Category 目标分类 | [optional] [default to undefined]
+**description** | **string** | Description 目标描述 | [optional] [default to undefined]
+**target_deadline** | **string** | TargetDeadline 截止时间 | [optional] [default to undefined]
+**title** | **string** | Title 目标标题 | [optional] [default to undefined]
 
 ## Example
 
@@ -14,7 +16,9 @@ Name | Type | Description | Notes
 import { GoalCreateGoalRequest } from '@goal-planner/backend-sdk';
 
 const instance: GoalCreateGoalRequest = {
+    category,
     description,
+    target_deadline,
     title,
 };
 ```

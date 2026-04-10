@@ -12,6 +12,8 @@ type Config struct {
 	RedisAddr string
 	JWTSecret string
 	AIAPIKey  string
+	AIBaseURL string
+	AIModel   string
 }
 
 // Load 读取项目需要的环境变量，并在未设置时使用默认值。
@@ -23,7 +25,9 @@ func Load() Config {
 	mysqlDSN := getEnv("MYSQL_DSN", "")
 	redisAddr := getEnv("REDIS_ADDR", "")
 	jwtSecret := getEnv("JWT_SECRET", "goal-planner-dev-secret")
-	aiAPIKey := getEnv("AI_API_KEY", "")
+	aiAPIKey := getEnv("AI_API_KEY", "sk-izskzazgcddwkoofoyqilzadcmjohgtcshioqntawddjtrdf")
+	aiBaseURL := getEnv("AI_BASE_URL", "https://api.siliconflow.com/v1")
+	aiModel := getEnv("AI_MODEL", "deepseek-ai/DeepSeek-V3.1")
 
 	return Config{
 		AppEnv:     appEnv,
@@ -33,6 +37,8 @@ func Load() Config {
 		RedisAddr:  redisAddr,
 		JWTSecret:  jwtSecret,
 		AIAPIKey:   aiAPIKey,
+		AIBaseURL:  aiBaseURL,
+		AIModel:    aiModel,
 	}
 }
 

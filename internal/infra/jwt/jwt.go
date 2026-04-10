@@ -11,6 +11,7 @@ import (
 type Claims struct {
 	UserID   int64  `json:"user_id"`
 	Username string `json:"username"`
+	Nickname string `json:"nickname"`
 	jwtv5.RegisteredClaims
 }
 
@@ -27,12 +28,13 @@ func NewManager(secret string) *Manager {
 }
 
 // GenerateToken 生成登录后的 JWT。
-func (m *Manager) GenerateToken(userID int64, username string) (string, error) {
+func (m *Manager) GenerateToken(userID int64, username string, nickname string) (string, error) {
 	now := time.Now()
 
 	claims := Claims{
 		UserID:   userID,
 		Username: username,
+		Nickname: nickname,
 		RegisteredClaims: jwtv5.RegisteredClaims{
 			ExpiresAt: jwtv5.NewNumericDate(now.Add(24 * time.Hour)),
 			IssuedAt:  jwtv5.NewNumericDate(now),

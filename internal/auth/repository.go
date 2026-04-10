@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"database/sql"
+	"errors"
 )
 
 // Repository 负责 auth 模块和数据库交互。
@@ -18,7 +19,7 @@ func NewRepository(db *sql.DB) *Repository {
 // GetByUsername 按用户名查询用户。
 func (r *Repository) GetByUsername(ctx context.Context, username string) (User, error) {
 	query := `
-		SELECT id, username, password_hash, status
+		SELECT id, username, nickname, password_hash, status
 		FROM users
 		WHERE username = ?
 	`
@@ -27,6 +28,7 @@ func (r *Repository) GetByUsername(ctx context.Context, username string) (User, 
 	err := r.db.QueryRowContext(ctx, query, username).Scan(
 		&user.ID,
 		&user.Username,
+		&user.Nickname,
 		&user.PasswordHash,
 		&user.Status,
 	)
@@ -37,19 +39,55 @@ func (r *Repository) GetByUsername(ctx context.Context, username string) (User, 
 	return user, nil
 }
 
-// CreateUser 创建新用户。
-func (r *Repository) CreateUser(ctx context.Context, username string, email string, passwordHash string) (int64, error) {
+// CreateUser 创建新用户，并为其绑定默认 user 角色。
+func (r *Repository) CreateUser(ctx context.Context, username string, nickname string, email string, passwordHash string) (int64, error) {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
 	query := `
-		INSERT INTO users (username, email, password_hash, status)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO users (username, nickname, email, password_hash, status)
+		VALUES (?, ?, ?, ?, ?)
 	`
 
-	result, err := r.db.ExecContext(ctx, query, username, email, passwordHash, "active")
+	result, err := tx.ExecContext(ctx, query, username, nickname, email, passwordHash, "active")
 	if err != nil {
 		return 0, err
 	}
 
-	return result.LastInsertId()
+	userID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	var roleID int64
+	err = tx.QueryRowContext(ctx, `SELECT id FROM roles WHERE code = ?`, "user").Scan(&roleID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, errors.New("默认角色 user 不存在")
+		}
+		return 0, err
+	}
+
+	_, err = tx.ExecContext(ctx, `
+		INSERT INTO user_roles (user_id, role_id)
+		VALUES (?, ?)
+	`, userID, roleID)
+	if err != nil {
+		return 0, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }
 
 // ListMenusByUserID 查询当前用户可见的菜单列表。

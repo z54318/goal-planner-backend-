@@ -15,7 +15,17 @@
 
 
 export interface AuthProfileData {
+    /**
+     * Nickname 昵称
+     */
+    'nickname'?: string;
+    /**
+     * UserID 用户ID
+     */
     'user_id'?: number;
+    /**
+     * Username 用户名
+     */
     'username'?: string;
 }
 

@@ -56,12 +56,16 @@ func (h *Handler) Register(c *gin.Context) {
 	}
 
 	req.Username = strings.TrimSpace(req.Username)
+	req.Nickname = strings.TrimSpace(req.Nickname)
 	req.Email = strings.TrimSpace(req.Email)
 	req.Password = strings.TrimSpace(req.Password)
 
 	if req.Username == "" || req.Email == "" || req.Password == "" {
 		response.Fail(c, http.StatusBadRequest, "用户名、邮箱和密码不能为空")
 		return
+	}
+	if req.Nickname == "" {
+		req.Nickname = req.Username
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -70,7 +74,7 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	userID, err := h.repo.CreateUser(c.Request.Context(), req.Username, req.Email, string(passwordHash))
+	userID, err := h.repo.CreateUser(c.Request.Context(), req.Username, req.Nickname, req.Email, string(passwordHash))
 	if err != nil {
 		response.Fail(c, http.StatusInternalServerError, "注册失败，用户名或邮箱可能已存在")
 		return
@@ -79,6 +83,7 @@ func (h *Handler) Register(c *gin.Context) {
 	response.Success(c, gin.H{
 		"user_id":  userID,
 		"username": req.Username,
+		"nickname": req.Nickname,
 		"email":    req.Email,
 	})
 }
@@ -136,7 +141,7 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.jwtManager.GenerateToken(user.ID, user.Username)
+	token, err := h.jwtManager.GenerateToken(user.ID, user.Username, user.Nickname)
 	if err != nil {
 		response.Fail(c, http.StatusInternalServerError, "生成登录凭证失败")
 		return
@@ -147,6 +152,7 @@ func (h *Handler) Login(c *gin.Context) {
 		"token":    token,
 		"user_id":  user.ID,
 		"username": user.Username,
+		"nickname": user.Nickname,
 	})
 }
 
@@ -163,10 +169,12 @@ func (h *Handler) Login(c *gin.Context) {
 func (h *Handler) Profile(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 	username, _ := c.Get("username")
+	nickname, _ := c.Get("nickname")
 
 	response.Success(c, gin.H{
 		"user_id":  userID,
 		"username": username,
+		"nickname": nickname,
 	})
 }
 
@@ -211,37 +219,51 @@ func buildMenuTree(menus []Menu) []Menu {
 		menuMap[menus[i].ID] = &menus[i]
 	}
 
-	tree := make([]Menu, 0)
+	rootMenus := make([]*Menu, 0)
 	for i := range menus {
 		menu := &menus[i]
 		if menu.ParentID == 0 {
-			tree = append(tree, *menu)
+			rootMenus = append(rootMenus, menu)
 			continue
 		}
 
 		parent, ok := menuMap[menu.ParentID]
 		if !ok {
-			tree = append(tree, *menu)
+			rootMenus = append(rootMenus, menu)
 			continue
 		}
 
 		parent.Children = append(parent.Children, *menu)
 	}
 
-	sort.Slice(tree, func(i, j int) bool {
-		if tree[i].SortOrder == tree[j].SortOrder {
-			return tree[i].ID < tree[j].ID
+	sort.Slice(rootMenus, func(i, j int) bool {
+		if rootMenus[i].SortOrder == rootMenus[j].SortOrder {
+			return rootMenus[i].ID < rootMenus[j].ID
 		}
-		return tree[i].SortOrder < tree[j].SortOrder
+		return rootMenus[i].SortOrder < rootMenus[j].SortOrder
 	})
 
-	for i := range tree {
-		sort.Slice(tree[i].Children, func(a, b int) bool {
-			if tree[i].Children[a].SortOrder == tree[i].Children[b].SortOrder {
-				return tree[i].Children[a].ID < tree[i].Children[b].ID
+	var sortChildren func(items []Menu)
+	sortChildren = func(items []Menu) {
+		sort.Slice(items, func(i, j int) bool {
+			if items[i].SortOrder == items[j].SortOrder {
+				return items[i].ID < items[j].ID
 			}
-			return tree[i].Children[a].SortOrder < tree[i].Children[b].SortOrder
+			return items[i].SortOrder < items[j].SortOrder
 		})
+		for i := range items {
+			if len(items[i].Children) > 0 {
+				sortChildren(items[i].Children)
+			}
+		}
+	}
+
+	tree := make([]Menu, 0, len(rootMenus))
+	for _, menu := range rootMenus {
+		if len(menu.Children) > 0 {
+			sortChildren(menu.Children)
+		}
+		tree = append(tree, *menu)
 	}
 
 	return tree

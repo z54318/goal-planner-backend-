@@ -5,9 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**email** | **string** |  | [optional] [default to undefined]
-**password** | **string** |  | [optional] [default to undefined]
-**username** | **string** |  | [optional] [default to undefined]
+**email** | **string** | Email 邮箱 | [optional] [default to undefined]
+**nickname** | **string** | Nickname 昵称 | [optional] [default to undefined]
+**password** | **string** | Password 密码 | [optional] [default to undefined]
+**username** | **string** | Username 用户名 | [optional] [default to undefined]
 
 ## Example
 
@@ -16,6 +17,7 @@ import { AuthRegisterRequest } from '@goal-planner/backend-sdk';
 
 const instance: AuthRegisterRequest = {
     email,
+    nickname,
     password,
     username,
 };

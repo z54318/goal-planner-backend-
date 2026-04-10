@@ -5,8 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**list** | [**Array&lt;GoalGoal&gt;**](GoalGoal.md) |  | [optional] [default to undefined]
-**total** | **number** |  | [optional] [default to undefined]
+**list** | [**Array&lt;GoalGoal&gt;**](GoalGoal.md) | List 目标列表 | [optional] [default to undefined]
+**page** | **number** | Page 当前页 | [optional] [default to undefined]
+**page_size** | **number** | PageSize 每页条数 | [optional] [default to undefined]
+**total** | **number** | Total 总数 | [optional] [default to undefined]
 
 ## Example
 
@@ -15,6 +17,8 @@ import { GoalGoalListData } from '@goal-planner/backend-sdk';
 
 const instance: GoalGoalListData = {
     list,
+    page,
+    page_size,
     total,
 };
 ```

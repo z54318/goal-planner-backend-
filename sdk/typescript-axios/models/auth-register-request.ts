@@ -15,8 +15,21 @@
 
 
 export interface AuthRegisterRequest {
+    /**
+     * Email 邮箱
+     */
     'email'?: string;
+    /**
+     * Nickname 昵称
+     */
+    'nickname'?: string;
+    /**
+     * Password 密码
+     */
     'password'?: string;
+    /**
+     * Username 用户名
+     */
     'username'?: string;
 }
 

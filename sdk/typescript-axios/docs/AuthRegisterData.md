@@ -5,9 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**email** | **string** |  | [optional] [default to undefined]
-**user_id** | **number** |  | [optional] [default to undefined]
-**username** | **string** |  | [optional] [default to undefined]
+**email** | **string** | Email 邮箱 | [optional] [default to undefined]
+**nickname** | **string** | Nickname 昵称 | [optional] [default to undefined]
+**user_id** | **number** | UserID 用户ID | [optional] [default to undefined]
+**username** | **string** | Username 用户名 | [optional] [default to undefined]
 
 ## Example
 
@@ -16,6 +17,7 @@ import { AuthRegisterData } from '@goal-planner/backend-sdk';
 
 const instance: AuthRegisterData = {
     email,
+    nickname,
     user_id,
     username,
 };
