@@ -24,12 +24,53 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { PlanPlanResponse } from '../models';
 // @ts-ignore
+import type { PlanUpdatePlanRequest } from '../models';
+// @ts-ignore
+import type { ResponseBody } from '../models';
+// @ts-ignore
 import type { ResponseErrorBody } from '../models';
 /**
  * PlansApi - axios parameter creator
  */
 export const PlansApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary 删除目标计划
+         * @param {number} id 目标ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalPlanDelete: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('goalPlanDelete', 'id', id)
+            const localVarPath = `/api/goals/{id}/plan`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary 生成目标计划
@@ -141,6 +182,48 @@ export const PlansApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary 编辑目标计划
+         * @param {number} id 目标ID
+         * @param {PlanUpdatePlanRequest} request 计划参数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalPlanUpdate: async (id: number, request: PlanUpdatePlanRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('goalPlanUpdate', 'id', id)
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('goalPlanUpdate', 'request', request)
+            const localVarPath = `/api/goals/{id}/plan`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -150,6 +233,19 @@ export const PlansApiAxiosParamCreator = function (configuration?: Configuration
 export const PlansApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = PlansApiAxiosParamCreator(configuration)
     return {
+        /**
+         * 
+         * @summary 删除目标计划
+         * @param {number} id 目标ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async goalPlanDelete(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResponseBody>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.goalPlanDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlansApi.goalPlanDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
         /**
          * 
          * @summary 生成目标计划
@@ -189,6 +285,20 @@ export const PlansApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['PlansApi.goalPlanRegenerate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @summary 编辑目标计划
+         * @param {number} id 目标ID
+         * @param {PlanUpdatePlanRequest} request 计划参数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async goalPlanUpdate(id: number, request: PlanUpdatePlanRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlanPlanResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.goalPlanUpdate(id, request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlansApi.goalPlanUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -198,6 +308,16 @@ export const PlansApiFp = function(configuration?: Configuration) {
 export const PlansApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = PlansApiFp(configuration)
     return {
+        /**
+         * 
+         * @summary 删除目标计划
+         * @param {PlansApiGoalPlanDeleteRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalPlanDelete(requestParameters: PlansApiGoalPlanDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResponseBody> {
+            return localVarFp.goalPlanDelete(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
         /**
          * 
          * @summary 生成目标计划
@@ -228,8 +348,28 @@ export const PlansApiFactory = function (configuration?: Configuration, basePath
         goalPlanRegenerate(requestParameters: PlansApiGoalPlanRegenerateRequest, options?: RawAxiosRequestConfig): AxiosPromise<PlanPlanResponse> {
             return localVarFp.goalPlanRegenerate(requestParameters.id, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary 编辑目标计划
+         * @param {PlansApiGoalPlanUpdateRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        goalPlanUpdate(requestParameters: PlansApiGoalPlanUpdateRequest, options?: RawAxiosRequestConfig): AxiosPromise<PlanPlanResponse> {
+            return localVarFp.goalPlanUpdate(requestParameters.id, requestParameters.request, options).then((request) => request(axios, basePath));
+        },
     };
 };
+
+/**
+ * Request parameters for goalPlanDelete operation in PlansApi.
+ */
+export interface PlansApiGoalPlanDeleteRequest {
+    /**
+     * 目标ID
+     */
+    readonly id: number
+}
 
 /**
  * Request parameters for goalPlanGenerate operation in PlansApi.
@@ -262,9 +402,35 @@ export interface PlansApiGoalPlanRegenerateRequest {
 }
 
 /**
+ * Request parameters for goalPlanUpdate operation in PlansApi.
+ */
+export interface PlansApiGoalPlanUpdateRequest {
+    /**
+     * 目标ID
+     */
+    readonly id: number
+
+    /**
+     * 计划参数
+     */
+    readonly request: PlanUpdatePlanRequest
+}
+
+/**
  * PlansApi - object-oriented interface
  */
 export class PlansApi extends BaseAPI {
+    /**
+     * 
+     * @summary 删除目标计划
+     * @param {PlansApiGoalPlanDeleteRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public goalPlanDelete(requestParameters: PlansApiGoalPlanDeleteRequest, options?: RawAxiosRequestConfig) {
+        return PlansApiFp(this.configuration).goalPlanDelete(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary 生成目标计划
@@ -296,6 +462,17 @@ export class PlansApi extends BaseAPI {
      */
     public goalPlanRegenerate(requestParameters: PlansApiGoalPlanRegenerateRequest, options?: RawAxiosRequestConfig) {
         return PlansApiFp(this.configuration).goalPlanRegenerate(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 编辑目标计划
+     * @param {PlansApiGoalPlanUpdateRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public goalPlanUpdate(requestParameters: PlansApiGoalPlanUpdateRequest, options?: RawAxiosRequestConfig) {
+        return PlansApiFp(this.configuration).goalPlanUpdate(requestParameters.id, requestParameters.request, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

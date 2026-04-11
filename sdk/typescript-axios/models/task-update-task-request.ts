@@ -19,6 +19,10 @@ import type { TaskTaskPriority } from './task-task-priority';
 
 export interface TaskUpdateTaskRequest {
     /**
+     * Deadline 任务截止时间，使用 RFC3339 格式
+     */
+    'deadline'?: string;
+    /**
      * Deliverables 交付物
      */
     'deliverables'?: string;

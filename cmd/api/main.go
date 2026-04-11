@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log/slog"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,7 @@ import (
 	appjwt "goal-planner/internal/infra/jwt"
 	"goal-planner/internal/infra/logger"
 	"goal-planner/internal/menu"
+	"goal-planner/internal/phase"
 	"goal-planner/internal/plan"
 	"goal-planner/internal/rbac"
 	"goal-planner/internal/task"
@@ -38,6 +40,7 @@ func main() {
 
 	// 初始化项目统一日志。
 	log := logger.New()
+	slog.SetDefault(log)
 
 	// 先尝试连接 MySQL，确认数据库配置可用。
 	database, err := db.NewMySQL(cfg.MySQLDSN)
@@ -83,6 +86,10 @@ func main() {
 	// 注册计划模块受保护路由。
 	planHandler := plan.NewHandler(database, aiClient)
 	planHandler.RegisterProtectedRoutes(protected)
+
+	// 注册阶段模块受保护路由。
+	phaseHandler := phase.NewHandler(database)
+	phaseHandler.RegisterProtectedRoutes(protected)
 
 	// 注册任务模块受保护路由。
 	taskHandler := task.NewHandler(database)

@@ -28,7 +28,6 @@ func Load() Config {
 	aiAPIKey := getEnv("AI_API_KEY", "sk-izskzazgcddwkoofoyqilzadcmjohgtcshioqntawddjtrdf")
 	aiBaseURL := getEnv("AI_BASE_URL", "https://api.siliconflow.com/v1")
 	aiModel := getEnv("AI_MODEL", "deepseek-ai/DeepSeek-V3.1")
-
 	return Config{
 		AppEnv:     appEnv,
 		HTTPAddr:   httpAddr,

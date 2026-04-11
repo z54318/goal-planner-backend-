@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	mySQLDriver "github.com/go-sql-driver/mysql"
@@ -33,6 +34,8 @@ func (h *Handler) RegisterProtectedRoutes(router *gin.RouterGroup) {
 	router.GET("/goals/:id/plan", h.GetPlan)
 	router.POST("/goals/:id/generate-plan", h.GeneratePlan)
 	router.POST("/goals/:id/regenerate-plan", h.RegeneratePlan)
+	router.PUT("/goals/:id/plan", h.UpdatePlan)
+	router.DELETE("/goals/:id/plan", h.DeletePlan)
 }
 
 // GetPlan 获取目标计划
@@ -165,6 +168,7 @@ func (h *Handler) GeneratePlan(c *gin.Context) {
 			return
 		}
 
+		slog.Error("save generated plan failed", "goal_id", goalID, "user_id", userID, "error", err)
 		response.Fail(c, http.StatusInternalServerError, "保存计划失败")
 		return
 	}
@@ -254,11 +258,118 @@ func (h *Handler) RegeneratePlan(c *gin.Context) {
 			return
 		}
 
+		slog.Error("save regenerated plan failed", "goal_id", goalID, "user_id", userID, "error", err)
 		response.Fail(c, http.StatusInternalServerError, "保存计划失败")
 		return
 	}
 
 	response.Success(c, plan)
+}
+
+// UpdatePlan 编辑目标计划
+// @Summary 编辑目标计划
+// @Tags plans
+// @ID goalPlanUpdate
+// @Accept json
+// @Produce json
+// @Param id path int true "目标ID"
+// @Param request body UpdatePlanRequest true "计划参数"
+// @Security BearerAuth
+// @Success 200 {object} PlanResponse
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/goals/{id}/plan [put]
+// UpdatePlan 更新当前登录用户某个目标下计划的标题和概述。
+func (h *Handler) UpdatePlan(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	goalID, ok := currentGoalID(c)
+	if !ok {
+		response.Fail(c, http.StatusBadRequest, "目标ID不合法")
+		return
+	}
+
+	var req UpdatePlanRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, http.StatusBadRequest, "请求体格式不正确")
+		return
+	}
+
+	req.Title = strings.TrimSpace(req.Title)
+	req.Overview = strings.TrimSpace(req.Overview)
+	if req.Title == "" {
+		response.Fail(c, http.StatusBadRequest, "计划标题不能为空")
+		return
+	}
+	if req.Overview == "" {
+		response.Fail(c, http.StatusBadRequest, "计划概述不能为空")
+		return
+	}
+
+	plan, err := h.repo.UpdateByGoalID(c.Request.Context(), userID, goalID, req)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "计划不存在")
+			return
+		}
+
+		response.Fail(c, http.StatusInternalServerError, "更新计划失败")
+		return
+	}
+
+	response.Success(c, plan)
+}
+
+// DeletePlan 删除目标计划
+// @Summary 删除目标计划
+// @Tags plans
+// @ID goalPlanDelete
+// @Produce json
+// @Param id path int true "目标ID"
+// @Security BearerAuth
+// @Success 200 {object} response.Body
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/goals/{id}/plan [delete]
+// DeletePlan 删除当前登录用户某个目标下的计划及其关联阶段和任务
+func (h *Handler) DeletePlan(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		// 401
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	goalID, ok := currentGoalID(c)
+	if !ok {
+		// 400
+		response.Fail(c, http.StatusBadRequest, "目标ID不合法")
+		return
+	}
+
+	err := h.repo.DeleteByGoalID(c.Request.Context(), userID, goalID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// 404
+			response.Fail(c, http.StatusNotFound, "计划不存在")
+			return
+		}
+		// 500
+		response.Fail(c, http.StatusInternalServerError, "删除计划失败")
+		return
+	}
+
+	response.Success(c, gin.H{
+		"deleted": true,
+	})
 }
 
 // currentUserID 从鉴权上下文中取出当前登录用户 ID。

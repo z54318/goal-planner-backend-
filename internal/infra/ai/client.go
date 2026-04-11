@@ -59,6 +59,7 @@ type TaskOutput struct {
 	Description   string `json:"description"`
 	EstimatedDays int    `json:"estimated_days"`
 	Deliverables  string `json:"deliverables"`
+	Deadline      string `json:"deadline"`
 	Priority      string `json:"priority"`
 	Order         int    `json:"order"`
 }
@@ -162,7 +163,7 @@ func (c *Client) GeneratePlan(ctx context.Context, goal GoalInput) (PlanOutput, 
 		)
 		taskContent, err := c.chatCompletion(
 			ctx,
-			"你是一个任务拆解助手。请只为单个阶段生成任务。你只能返回 JSON，且必须包含 tasks 字段。tasks 最多 3 个。每个 task 必须包含 title、description、estimated_days、deliverables、priority、order。限制：task.title 不超过 24 个汉字；task.description 不超过 60 个汉字；deliverables 不超过 24 个汉字；estimated_days 取 1 到 7 的整数；priority 只能是 high、medium、low 之一。任务要具体、可操作、可验证。不要返回任何解释文字或 Markdown。",
+			"你是一个任务拆解助手。请只为单个阶段生成任务。你只能返回 JSON，且必须包含 tasks 字段。tasks 最多 3 个。每个 task 必须包含 title、description、estimated_days、deliverables、deadline、priority、order。限制：task.title 不超过 24 个汉字；task.description 不超过 60 个汉字；deliverables 不超过 24 个汉字；estimated_days 取 1 到 7 的整数；deadline 使用 RFC3339 时间字符串；priority 只能是 high、medium、low 之一。任务要具体、可操作、可验证。不要返回任何解释文字或 Markdown。",
 			phaseTaskPrompt,
 		)
 		if err != nil {
@@ -200,11 +201,15 @@ func (c *Client) GeneratePlan(ctx context.Context, goal GoalInput) (PlanOutput, 
 			if taskOutput.Tasks[j].EstimatedDays > 7 {
 				taskOutput.Tasks[j].EstimatedDays = 7
 			}
+			if _, err := time.Parse(time.RFC3339, taskOutput.Tasks[j].Deadline); err != nil {
+				taskOutput.Tasks[j].Deadline = ""
+			}
 			if !isValidTaskPriority(taskOutput.Tasks[j].Priority) {
 				taskOutput.Tasks[j].Priority = "medium"
 			}
 		}
 
+		applyDefaultTaskDeadlines(taskOutput.Tasks, goal.TargetDeadline)
 		output.Phases[i].Tasks = taskOutput.Tasks
 	}
 
@@ -301,4 +306,35 @@ func limitRunes(value string, max int) string {
 
 	runes := []rune(value)
 	return string(runes[:max])
+}
+
+func applyDefaultTaskDeadlines(tasks []TaskOutput, goalDeadline *time.Time) {
+	now := time.Now()
+	current := now.Add(24 * time.Hour)
+	for i := range tasks {
+		if tasks[i].Deadline != "" {
+			if parsed, err := time.Parse(time.RFC3339, tasks[i].Deadline); err == nil {
+				if parsed.Before(now) {
+					tasks[i].Deadline = ""
+				} else {
+					if goalDeadline != nil && parsed.After(*goalDeadline) {
+						parsed = *goalDeadline
+					}
+					if parsed.Before(current) {
+						tasks[i].Deadline = ""
+					} else {
+						current = parsed
+						tasks[i].Deadline = current.Format(time.RFC3339)
+						continue
+					}
+				}
+			}
+		}
+
+		current = current.Add(time.Duration(tasks[i].EstimatedDays) * 24 * time.Hour)
+		if goalDeadline != nil && current.After(*goalDeadline) {
+			current = *goalDeadline
+		}
+		tasks[i].Deadline = current.Format(time.RFC3339)
+	}
 }

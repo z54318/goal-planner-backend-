@@ -66,9 +66,13 @@ Class | Method | HTTP request | Description
 *MenusApi* | [**adminMenuGet**](docs/MenusApi.md#adminmenuget) | **GET** /api/admin/menus/{id} | 获取菜单详情
 *MenusApi* | [**adminMenuUpdate**](docs/MenusApi.md#adminmenuupdate) | **PUT** /api/admin/menus/{id} | 更新菜单
 *MenusApi* | [**adminMenusList**](docs/MenusApi.md#adminmenuslist) | **GET** /api/admin/menus | 获取菜单列表
+*PhasesApi* | [**phaseGet**](docs/PhasesApi.md#phaseget) | **GET** /api/phases/{id} | 获取阶段详情
+*PhasesApi* | [**phaseUpdate**](docs/PhasesApi.md#phaseupdate) | **PUT** /api/phases/{id} | 编辑阶段
+*PlansApi* | [**goalPlanDelete**](docs/PlansApi.md#goalplandelete) | **DELETE** /api/goals/{id}/plan | 删除目标计划
 *PlansApi* | [**goalPlanGenerate**](docs/PlansApi.md#goalplangenerate) | **POST** /api/goals/{id}/generate-plan | 生成目标计划
 *PlansApi* | [**goalPlanGet**](docs/PlansApi.md#goalplanget) | **GET** /api/goals/{id}/plan | 获取目标计划
 *PlansApi* | [**goalPlanRegenerate**](docs/PlansApi.md#goalplanregenerate) | **POST** /api/goals/{id}/regenerate-plan | 重新生成目标计划
+*PlansApi* | [**goalPlanUpdate**](docs/PlansApi.md#goalplanupdate) | **PUT** /api/goals/{id}/plan | 编辑目标计划
 *RbacApi* | [**adminPermissionCreate**](docs/RbacApi.md#adminpermissioncreate) | **POST** /api/admin/permissions | 新增权限
 *RbacApi* | [**adminPermissionDelete**](docs/RbacApi.md#adminpermissiondelete) | **DELETE** /api/admin/permissions/{id} | 删除权限
 *RbacApi* | [**adminPermissionUpdate**](docs/RbacApi.md#adminpermissionupdate) | **PUT** /api/admin/permissions/{id} | 更新权限
@@ -111,12 +115,16 @@ Class | Method | HTTP request | Description
  - [MenuMenuListResponse](docs/MenuMenuListResponse.md)
  - [MenuMenuResponse](docs/MenuMenuResponse.md)
  - [MenuUpdateMenuRequest](docs/MenuUpdateMenuRequest.md)
+ - [PhasePhase](docs/PhasePhase.md)
+ - [PhasePhaseResponse](docs/PhasePhaseResponse.md)
+ - [PhaseUpdatePhaseRequest](docs/PhaseUpdatePhaseRequest.md)
  - [PlanPhase](docs/PlanPhase.md)
  - [PlanPlan](docs/PlanPlan.md)
  - [PlanPlanResponse](docs/PlanPlanResponse.md)
  - [PlanTask](docs/PlanTask.md)
  - [PlanTaskPriority](docs/PlanTaskPriority.md)
  - [PlanTaskStatus](docs/PlanTaskStatus.md)
+ - [PlanUpdatePlanRequest](docs/PlanUpdatePlanRequest.md)
  - [RbacCreatePermissionRequest](docs/RbacCreatePermissionRequest.md)
  - [RbacPermission](docs/RbacPermission.md)
  - [RbacPermissionListResponse](docs/RbacPermissionListResponse.md)

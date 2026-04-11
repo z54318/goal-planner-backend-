@@ -60,6 +60,8 @@ type Task struct {
 	EstimatedDays int `json:"estimated_days"`
 	// Deliverables 交付物
 	Deliverables string `json:"deliverables"`
+	// Deadline 任务截止时间
+	Deadline *time.Time `json:"deadline,omitempty"`
 	// Priority 任务优先级
 	Priority TaskPriority `json:"priority" enums:"high,medium,low"`
 	// Status 任务状态
@@ -97,4 +99,17 @@ type PlanResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    Plan   `json:"data"`
+}
+
+// UpdatePlanRequest 表示更新计划请求体。
+type UpdatePlanRequest struct {
+	// Title 计划标题
+	Title string `json:"title"`
+	// Overview 计划概述
+	Overview string `json:"overview"`
+}
+
+// DeletePlanRequest 表示删除计划请求体
+type DeletePlanRequest struct {
+	PlanID int64 `json:"plan_id"`
 }

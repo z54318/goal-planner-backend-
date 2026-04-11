@@ -17,6 +17,7 @@
 export * from './api/auth-api';
 export * from './api/goals-api';
 export * from './api/menus-api';
+export * from './api/phases-api';
 export * from './api/plans-api';
 export * from './api/rbac-api';
 export * from './api/tasks-api';

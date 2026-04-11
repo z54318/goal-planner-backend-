@@ -5,6 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**deadline** | **string** | Deadline 任务截止时间，使用 RFC3339 格式 | [optional] [default to undefined]
 **deliverables** | **string** | Deliverables 交付物 | [optional] [default to undefined]
 **description** | **string** | Description 任务描述 | [optional] [default to undefined]
 **estimated_days** | **number** | EstimatedDays 预估天数 | [optional] [default to undefined]
@@ -19,6 +20,7 @@ Name | Type | Description | Notes
 import { TaskCreateTaskRequest } from '@goal-planner/backend-sdk';
 
 const instance: TaskCreateTaskRequest = {
+    deadline,
     deliverables,
     description,
     estimated_days,

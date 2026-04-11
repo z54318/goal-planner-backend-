@@ -26,6 +26,10 @@ export interface PlanTask {
      */
     'created_at'?: string;
     /**
+     * Deadline 任务截止时间
+     */
+    'deadline'?: string;
+    /**
      * Deliverables 交付物
      */
     'deliverables'?: string;

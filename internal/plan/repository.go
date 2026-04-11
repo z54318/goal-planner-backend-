@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"sort"
+	"time"
 
 	appai "goal-planner/internal/infra/ai"
 )
@@ -72,6 +73,87 @@ func (r *Repository) GetByGoalID(ctx context.Context, userID int64, goalID int64
 	return plan, nil
 }
 
+// UpdateByGoalID 更新当前用户某个目标下的计划基础信息。
+func (r *Repository) UpdateByGoalID(ctx context.Context, userID int64, goalID int64, req UpdatePlanRequest) (Plan, error) {
+	result, err := r.db.ExecContext(
+		ctx,
+		`
+			UPDATE plans
+			SET title = ?, overview = ?
+			WHERE goal_id = ? AND user_id = ?
+		`,
+		req.Title,
+		req.Overview,
+		goalID,
+		userID,
+	)
+	if err != nil {
+		return Plan{}, err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return Plan{}, err
+	}
+	if affected == 0 {
+		return Plan{}, sql.ErrNoRows
+	}
+
+	return r.GetByGoalID(ctx, userID, goalID)
+}
+
+// DeleteByGoalID 删除当前用户某个目标下的计划及其关联数据。
+func (r *Repository) DeleteByGoalID(ctx context.Context, userID int64, goalID int64) error {
+	// 开启一个数据库事务：将数据库操作绑一起，要么全成功，要么全失败
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	// 回滚事务：defer等当前函数结束时再执行
+	defer tx.Rollback()
+
+	var planID int64
+	err = tx.QueryRowContext(
+		ctx,
+		`SELECT id FROM plans WHERE goal_id = ? AND user_id = ?`,
+		goalID,
+		userID,
+	).Scan(&planID)
+	// Scan:将数据库查出来的列值读出来填到变量里 &：表示取这个变量的地址，让它能往里面写值 如果不写&就是变量里的值
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.ExecContext(
+		ctx,
+		`DELETE FROM tasks WHERE phase_id IN (SELECT id FROM phases WHERE plan_id = ? )`,
+		planID,
+	)
+	if err != nil {
+		return err
+	}
+	_, err = tx.ExecContext(
+		ctx,
+		`DELETE FROM phases WHERE plan_id = ?`,
+		planID,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.ExecContext(
+		ctx,
+		`DELETE FROM plans WHERE id = ? AND user_id = ?`,
+		planID,
+		userID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
 // CreateGenerated 为当前用户的目标创建一条 AI 生成的计划记录。
 func (r *Repository) CreateGenerated(ctx context.Context, userID int64, goalID int64, output appai.PlanOutput) (Plan, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
@@ -123,14 +205,20 @@ func (r *Repository) CreateGenerated(ctx context.Context, userID int64, goalID i
 		}
 
 		for _, task := range phase.Tasks {
+			deadline, err := parseGeneratedTaskDeadline(task.Deadline)
+			if err != nil {
+				return Plan{}, err
+			}
+
 			if _, err := tx.ExecContext(
 				ctx,
-				`INSERT INTO tasks (phase_id, title, description, estimated_days, deliverables, priority, status, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+				`INSERT INTO tasks (phase_id, title, description, estimated_days, deliverables, deadline, priority, status, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				phaseID,
 				task.Title,
 				task.Description,
 				task.EstimatedDays,
 				task.Deliverables,
+				deadline,
 				task.Priority,
 				"todo",
 				task.Order,
@@ -222,14 +310,20 @@ func (r *Repository) RegenerateGenerated(ctx context.Context, userID int64, goal
 		}
 
 		for _, task := range phase.Tasks {
+			deadline, err := parseGeneratedTaskDeadline(task.Deadline)
+			if err != nil {
+				return Plan{}, err
+			}
+
 			if _, err := tx.ExecContext(
 				ctx,
-				`INSERT INTO tasks (phase_id, title, description, estimated_days, deliverables, priority, status, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+				`INSERT INTO tasks (phase_id, title, description, estimated_days, deliverables, deadline, priority, status, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				phaseID,
 				task.Title,
 				task.Description,
 				task.EstimatedDays,
 				task.Deliverables,
+				deadline,
 				task.Priority,
 				"todo",
 				task.Order,
@@ -297,7 +391,7 @@ func (r *Repository) listPhasesByPlanID(ctx context.Context, planID int64) ([]Ph
 
 func (r *Repository) listTasksByPhaseIDs(ctx context.Context, phaseIDs []int64) (map[int64][]Task, error) {
 	query := `
-		SELECT id, phase_id, title, description, estimated_days, deliverables, priority, status, sort_order, created_at, updated_at
+		SELECT id, phase_id, title, description, estimated_days, deliverables, deadline, priority, status, sort_order, created_at, updated_at
 		FROM tasks
 		WHERE phase_id = ?
 		ORDER BY sort_order ASC, id ASC
@@ -320,6 +414,7 @@ func (r *Repository) listTasksByPhaseIDs(ctx context.Context, phaseIDs []int64) 
 				&task.Description,
 				&task.EstimatedDays,
 				&task.Deliverables,
+				&task.Deadline,
 				&task.Priority,
 				&task.Status,
 				&task.SortOrder,
@@ -350,4 +445,17 @@ func (r *Repository) listTasksByPhaseIDs(ctx context.Context, phaseIDs []int64) 
 	}
 
 	return taskMap, nil
+}
+
+func parseGeneratedTaskDeadline(value string) (*time.Time, error) {
+	if value == "" {
+		return nil, nil
+	}
+
+	deadline, err := time.Parse(time.RFC3339, value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &deadline, nil
 }

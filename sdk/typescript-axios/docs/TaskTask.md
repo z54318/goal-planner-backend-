@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **created_at** | **string** | CreatedAt 创建时间 | [optional] [default to undefined]
+**deadline** | **string** | Deadline 任务截止时间 | [optional] [default to undefined]
 **deliverables** | **string** | Deliverables 交付物 | [optional] [default to undefined]
 **description** | **string** | Description 任务描述 | [optional] [default to undefined]
 **estimated_days** | **number** | EstimatedDays 预估天数 | [optional] [default to undefined]
@@ -28,6 +29,7 @@ import { TaskTask } from '@goal-planner/backend-sdk';
 
 const instance: TaskTask = {
     created_at,
+    deadline,
     deliverables,
     description,
     estimated_days,

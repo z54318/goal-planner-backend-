@@ -388,6 +388,54 @@ definitions:
         description: SortOrder 排序值
         type: integer
     type: object
+  phase.Phase:
+    properties:
+      created_at:
+        description: CreatedAt 创建时间
+        type: string
+      description:
+        description: Description 阶段描述
+        type: string
+      goal_id:
+        description: GoalID 所属目标ID
+        type: integer
+      id:
+        description: ID 阶段ID
+        type: integer
+      plan_id:
+        description: PlanID 所属计划ID
+        type: integer
+      sort_order:
+        description: SortOrder 阶段顺序
+        type: integer
+      title:
+        description: Title 阶段标题
+        type: string
+      updated_at:
+        description: UpdatedAt 更新时间
+        type: string
+    type: object
+  phase.PhaseResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/phase.Phase'
+      message:
+        type: string
+    type: object
+  phase.UpdatePhaseRequest:
+    properties:
+      description:
+        description: Description 阶段描述
+        type: string
+      sort_order:
+        description: SortOrder 阶段顺序
+        type: integer
+      title:
+        description: Title 阶段标题
+        type: string
+    type: object
   plan.Phase:
     properties:
       created_at:
@@ -460,6 +508,9 @@ definitions:
       created_at:
         description: CreatedAt 创建时间
         type: string
+      deadline:
+        description: Deadline 任务截止时间
+        type: string
       deliverables:
         description: Deliverables 交付物
         type: string
@@ -521,6 +572,15 @@ definitions:
     - TaskStatusTodo
     - TaskStatusInProgress
     - TaskStatusDone
+  plan.UpdatePlanRequest:
+    properties:
+      overview:
+        description: Overview 计划概述
+        type: string
+      title:
+        description: Title 计划标题
+        type: string
+    type: object
   rbac.CreatePermissionRequest:
     properties:
       code:
@@ -656,6 +716,9 @@ definitions:
     type: object
   task.CreateTaskRequest:
     properties:
+      deadline:
+        description: Deadline 任务截止时间，使用 RFC3339 格式
+        type: string
       deliverables:
         description: Deliverables 交付物
         type: string
@@ -702,6 +765,9 @@ definitions:
     properties:
       created_at:
         description: CreatedAt 创建时间
+        type: string
+      deadline:
+        description: Deadline 任务截止时间
         type: string
       deliverables:
         description: Deliverables 交付物
@@ -813,6 +879,9 @@ definitions:
     - TaskStatusDone
   task.UpdateTaskRequest:
     properties:
+      deadline:
+        description: Deadline 任务截止时间，使用 RFC3339 格式
+        type: string
       deliverables:
         description: Deliverables 交付物
         type: string
@@ -1757,6 +1826,42 @@ paths:
       tags:
       - plans
   /api/goals/{id}/plan:
+    delete:
+      operationId: goalPlanDelete
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除目标计划
+      tags:
+      - plans
     get:
       operationId: goalPlanGet
       parameters:
@@ -1791,6 +1896,50 @@ paths:
       security:
       - BearerAuth: []
       summary: 获取目标计划
+      tags:
+      - plans
+    put:
+      consumes:
+      - application/json
+      operationId: goalPlanUpdate
+      parameters:
+      - description: 目标ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 计划参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/plan.UpdatePlanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.PlanResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 编辑目标计划
       tags:
       - plans
   /api/goals/{id}/regenerate-plan:
@@ -1875,6 +2024,87 @@ paths:
       summary: 更新目标状态
       tags:
       - goals
+  /api/phases/{id}:
+    get:
+      operationId: phaseGet
+      parameters:
+      - description: 阶段ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phase.PhaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 获取阶段详情
+      tags:
+      - phases
+    put:
+      consumes:
+      - application/json
+      operationId: phaseUpdate
+      parameters:
+      - description: 阶段ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 阶段信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/phase.UpdatePhaseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phase.PhaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 编辑阶段
+      tags:
+      - phases
   /api/tasks:
     get:
       operationId: tasksList

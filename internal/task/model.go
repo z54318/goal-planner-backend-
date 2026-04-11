@@ -48,6 +48,8 @@ type Task struct {
 	EstimatedDays int `json:"estimated_days"`
 	// Deliverables 交付物
 	Deliverables string `json:"deliverables"`
+	// Deadline 任务截止时间
+	Deadline *time.Time `json:"deadline,omitempty"`
 	// Priority 任务优先级
 	Priority TaskPriority `json:"priority" enums:"high,medium,low"`
 	// Status 任务状态
@@ -98,6 +100,8 @@ type CreateTaskRequest struct {
 	EstimatedDays int `json:"estimated_days"`
 	// Deliverables 交付物
 	Deliverables string `json:"deliverables"`
+	// Deadline 任务截止时间，使用 RFC3339 格式
+	Deadline *time.Time `json:"deadline"`
 	// Priority 任务优先级：high 高，medium 中，low 低
 	Priority TaskPriority `json:"priority" enums:"high,medium,low"`
 	// SortOrder 任务顺序
@@ -116,6 +120,8 @@ type UpdateTaskRequest struct {
 	EstimatedDays int `json:"estimated_days"`
 	// Deliverables 交付物
 	Deliverables string `json:"deliverables"`
+	// Deadline 任务截止时间，使用 RFC3339 格式
+	Deadline *time.Time `json:"deadline"`
 	// Priority 任务优先级：high 高，medium 中，low 低
 	Priority TaskPriority `json:"priority" enums:"high,medium,low"`
 	// SortOrder 任务顺序

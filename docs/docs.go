@@ -1363,6 +1363,130 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "编辑目标计划",
+                "operationId": "goalPlanUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "计划参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/plan.UpdatePlanRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/plan.PlanResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plans"
+                ],
+                "summary": "删除目标计划",
+                "operationId": "goalPlanDelete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "目标ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Body"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
             }
         },
         "/api/goals/{id}/regenerate-plan": {
@@ -1464,6 +1588,132 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/goal.GoalResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/phases/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "phases"
+                ],
+                "summary": "获取阶段详情",
+                "operationId": "phaseGet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "阶段ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/phase.PhaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "phases"
+                ],
+                "summary": "编辑阶段",
+                "operationId": "phaseUpdate",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "阶段ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "阶段信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/phase.UpdatePhaseRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/phase.PhaseResponse"
                         }
                     },
                     "400": {
@@ -2437,6 +2687,74 @@ const docTemplate = `{
                 }
             }
         },
+        "phase.Phase": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description 阶段描述",
+                    "type": "string"
+                },
+                "goal_id": {
+                    "description": "GoalID 所属目标ID",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "ID 阶段ID",
+                    "type": "integer"
+                },
+                "plan_id": {
+                    "description": "PlanID 所属计划ID",
+                    "type": "integer"
+                },
+                "sort_order": {
+                    "description": "SortOrder 阶段顺序",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Title 阶段标题",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt 更新时间",
+                    "type": "string"
+                }
+            }
+        },
+        "phase.PhaseResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/phase.Phase"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "phase.UpdatePhaseRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Description 阶段描述",
+                    "type": "string"
+                },
+                "sort_order": {
+                    "description": "SortOrder 阶段顺序",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Title 阶段标题",
+                    "type": "string"
+                }
+            }
+        },
         "plan.Phase": {
             "type": "object",
             "properties": {
@@ -2538,6 +2856,10 @@ const docTemplate = `{
                     "description": "CreatedAt 创建时间",
                     "type": "string"
                 },
+                "deadline": {
+                    "description": "Deadline 任务截止时间",
+                    "type": "string"
+                },
                 "deliverables": {
                     "description": "Deliverables 交付物",
                     "type": "string"
@@ -2623,6 +2945,19 @@ const docTemplate = `{
                 "TaskStatusInProgress",
                 "TaskStatusDone"
             ]
+        },
+        "plan.UpdatePlanRequest": {
+            "type": "object",
+            "properties": {
+                "overview": {
+                    "description": "Overview 计划概述",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Title 计划标题",
+                    "type": "string"
+                }
+            }
         },
         "rbac.CreatePermissionRequest": {
             "type": "object",
@@ -2823,6 +3158,10 @@ const docTemplate = `{
         "task.CreateTaskRequest": {
             "type": "object",
             "properties": {
+                "deadline": {
+                    "description": "Deadline 任务截止时间，使用 RFC3339 格式",
+                    "type": "string"
+                },
                 "deliverables": {
                     "description": "Deliverables 交付物",
                     "type": "string"
@@ -2890,6 +3229,10 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "description": "CreatedAt 创建时间",
+                    "type": "string"
+                },
+                "deadline": {
+                    "description": "Deadline 任务截止时间",
                     "type": "string"
                 },
                 "deliverables": {
@@ -3049,6 +3392,10 @@ const docTemplate = `{
         "task.UpdateTaskRequest": {
             "type": "object",
             "properties": {
+                "deadline": {
+                    "description": "Deadline 任务截止时间，使用 RFC3339 格式",
+                    "type": "string"
+                },
                 "deliverables": {
                     "description": "Deliverables 交付物",
                     "type": "string"

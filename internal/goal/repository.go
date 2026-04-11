@@ -239,12 +239,64 @@ func (r *Repository) UpdateStatus(ctx context.Context, userID int64, id int64, s
 
 // Delete 删除当前用户的一条目标记录。
 func (r *Repository) Delete(ctx context.Context, userID int64, id int64) error {
-	query := `
-		DELETE FROM goals
-		WHERE id = ? AND user_id = ?
-	`
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
 
-	result, err := r.db.ExecContext(ctx, query, id, userID)
+	result, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE t
+			FROM tasks t
+			INNER JOIN phases ph ON ph.id = t.phase_id
+			INNER JOIN plans p ON p.id = ph.plan_id
+			WHERE p.goal_id = ? AND p.user_id = ?
+		`,
+		id,
+		userID,
+	)
+	if err != nil {
+		return err
+	}
+	_ = result
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE ph
+			FROM phases ph
+			INNER JOIN plans p ON p.id = ph.plan_id
+			WHERE p.goal_id = ? AND p.user_id = ?
+		`,
+		id,
+		userID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM plans
+			WHERE goal_id = ? AND user_id = ?
+		`,
+		id,
+		userID,
+	); err != nil {
+		return err
+	}
+
+	result, err = tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM goals
+			WHERE id = ? AND user_id = ?
+		`,
+		id,
+		userID,
+	)
 	if err != nil {
 		return err
 	}
@@ -257,5 +309,5 @@ func (r *Repository) Delete(ctx context.Context, userID int64, id int64) error {
 		return sql.ErrNoRows
 	}
 
-	return nil
+	return tx.Commit()
 }
