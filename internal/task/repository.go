@@ -4,6 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
+
+	storedsuggestion "goal-planner/internal/common/suggestion"
+	appai "goal-planner/internal/infra/ai"
 )
 
 // Repository 负责 task 模块和数据库打交道。
@@ -67,6 +71,102 @@ func (r *Repository) GetByID(ctx context.Context, userID int64, taskID int64) (T
 	}
 
 	return task, nil
+}
+
+// GetSuggestionContextByID 查询任务下一步建议所需上下文。
+func (r *Repository) GetSuggestionContextByID(ctx context.Context, userID int64, taskID int64) (appai.TaskSuggestionInput, error) {
+	query := `
+		SELECT
+			g.title,
+			pl.title,
+			p.title,
+			t.title,
+			t.description,
+			t.status,
+			t.priority,
+			t.deadline,
+			t.phase_id
+		FROM tasks t
+		INNER JOIN phases p ON p.id = t.phase_id
+		INNER JOIN plans pl ON pl.id = p.plan_id
+		INNER JOIN goals g ON g.id = pl.goal_id
+		WHERE t.id = ? AND pl.user_id = ?
+	`
+
+	var input appai.TaskSuggestionInput
+	var deadline sql.NullTime
+	var phaseID int64
+	err := r.db.QueryRowContext(ctx, query, taskID, userID).Scan(
+		&input.GoalTitle,
+		&input.PlanTitle,
+		&input.PhaseTitle,
+		&input.Task.Title,
+		&input.Task.Description,
+		&input.Task.Status,
+		&input.Task.Priority,
+		&deadline,
+		&phaseID,
+	)
+	if err != nil {
+		return appai.TaskSuggestionInput{}, err
+	}
+	input.Task.Deadline = formatSuggestionDeadline(deadline)
+
+	rows, err := r.db.QueryContext(
+		ctx,
+		`
+			SELECT title, description, status, priority, deadline
+			FROM tasks
+			WHERE phase_id = ? AND id <> ?
+			ORDER BY sort_order ASC, id ASC
+		`,
+		phaseID,
+		taskID,
+	)
+	if err != nil {
+		return appai.TaskSuggestionInput{}, err
+	}
+	defer rows.Close()
+
+	input.SiblingTasks = make([]appai.SuggestionTaskDigest, 0)
+	for rows.Next() {
+		var task appai.SuggestionTaskDigest
+		var siblingDeadline sql.NullTime
+		if err := rows.Scan(
+			&task.Title,
+			&task.Description,
+			&task.Status,
+			&task.Priority,
+			&siblingDeadline,
+		); err != nil {
+			return appai.TaskSuggestionInput{}, err
+		}
+		task.Deadline = formatSuggestionDeadline(siblingDeadline)
+		input.SiblingTasks = append(input.SiblingTasks, task)
+	}
+	if err := rows.Err(); err != nil {
+		return appai.TaskSuggestionInput{}, err
+	}
+
+	return input, nil
+}
+
+// SaveSuggestionByID 保存一条任务执行建议。
+func (r *Repository) SaveSuggestionByID(ctx context.Context, userID int64, taskID int64, item appai.NextStepSuggestion) error {
+	if err := r.ensureOwnedTaskID(ctx, userID, taskID); err != nil {
+		return err
+	}
+
+	return storedsuggestion.Upsert(ctx, r.db, userID, storedsuggestion.TargetTypeTask, taskID, item)
+}
+
+// GetSavedSuggestionByID 查询一条已保存的任务执行建议。
+func (r *Repository) GetSavedSuggestionByID(ctx context.Context, userID int64, taskID int64) (appai.NextStepSuggestion, error) {
+	if err := r.ensureOwnedTaskID(ctx, userID, taskID); err != nil {
+		return appai.NextStepSuggestion{}, err
+	}
+
+	return storedsuggestion.Get(ctx, r.db, userID, storedsuggestion.TargetTypeTask, taskID)
 }
 
 // ListByUserID 查询当前用户的任务列表。
@@ -293,6 +393,23 @@ func (r *Repository) UpdateStatus(ctx context.Context, userID int64, taskID int6
 
 // Delete 删除当前用户的一条任务。
 func (r *Repository) Delete(ctx context.Context, userID int64, taskID int64) error {
+	if err := r.ensureOwnedTaskID(ctx, userID, taskID); err != nil {
+		return err
+	}
+
+	if _, err := r.db.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id = ?
+		`,
+		userID,
+		string(storedsuggestion.TargetTypeTask),
+		taskID,
+	); err != nil {
+		return err
+	}
+
 	result, err := r.db.ExecContext(
 		ctx,
 		`
@@ -318,6 +435,72 @@ func (r *Repository) Delete(ctx context.Context, userID int64, taskID int64) err
 	}
 
 	return nil
+}
+
+// sort 任务排序
+func (r *Repository) SortByPhaseID(ctx context.Context, userID int64, phaseID int64, taskIDs []int64) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// 确认这个阶段属于当前用户
+	var ownedPhasesID int64
+	err = tx.QueryRowContext(
+		ctx,
+		`SELECT p.id FROM phases p INNER JOIN plans pl ON pl.id = p.plan_id WHERE p.id = ? AND pl.user_id =?`,
+		phaseID,
+		userID,
+	).Scan(&ownedPhasesID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := tx.QueryContext(
+		ctx,
+		`SELECT id FROM tasks WHERE phase_id = ?`,
+		ownedPhasesID,
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	existing := make(map[int64]struct{})
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			return err
+		}
+		existing[id] = struct{}{}
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	// 校验每个传入的taskID是否都存在于该阶段
+	for _, taskID := range taskIDs {
+		if _, ok := existing[taskID]; !ok {
+			return sql.ErrNoRows
+		}
+	}
+
+	// 按顺序更新 sort_order
+	for index, taskID := range taskIDs {
+		_, err := tx.ExecContext(
+			ctx,
+			`UPDATE tasks SET sort_order = ? WHERE id = ? AND phase_id = ?`,
+			index+1,
+			taskID,
+			ownedPhasesID,
+		)
+		if err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit()
 }
 
 func (r *Repository) getOwnedPhaseID(ctx context.Context, userID int64, phaseID int64) (int64, error) {
@@ -352,4 +535,28 @@ func (r *Repository) nextSortOrderByPhaseID(ctx context.Context, phaseID int64) 
 	}
 
 	return sortOrder, nil
+}
+
+func formatSuggestionDeadline(deadline sql.NullTime) string {
+	if !deadline.Valid {
+		return ""
+	}
+	return deadline.Time.Format(time.RFC3339)
+}
+
+func (r *Repository) ensureOwnedTaskID(ctx context.Context, userID int64, taskID int64) error {
+	var ownedTaskID int64
+	err := r.db.QueryRowContext(
+		ctx,
+		`
+			SELECT t.id
+			FROM tasks t
+			INNER JOIN phases p ON p.id = t.phase_id
+			INNER JOIN plans pl ON pl.id = p.plan_id
+			WHERE t.id = ? AND pl.user_id = ?
+		`,
+		taskID,
+		userID,
+	).Scan(&ownedTaskID)
+	return err
 }

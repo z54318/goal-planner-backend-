@@ -69,6 +69,27 @@ type TaskResponse struct {
 	Data    Task   `json:"data"`
 }
 
+// NextStepSuggestion 表示执行建议。
+type NextStepSuggestion struct {
+	// Summary 执行建议摘要
+	Summary string `json:"summary"`
+	// NextAction 建议执行动作
+	NextAction string `json:"next_action"`
+	// Reason 建议原因
+	Reason string `json:"reason"`
+	// Checklist 执行清单
+	Checklist []string `json:"checklist"`
+	// Risk 主要风险
+	Risk string `json:"risk"`
+}
+
+// NextStepSuggestionResponse 表示执行建议成功响应。
+type NextStepSuggestionResponse struct {
+	Code    int                `json:"code"`
+	Message string             `json:"message"`
+	Data    NextStepSuggestion `json:"data"`
+}
+
 // TaskListData 表示任务列表响应数据。
 type TaskListData struct {
 	// List 任务列表
@@ -146,6 +167,12 @@ type ListTasksRequest struct {
 type UpdateTaskStatusRequest struct {
 	// Status 任务状态：todo 待开始，in_progress 进行中，done 已完成
 	Status TaskStatus `json:"status" enums:"todo,in_progress,done"`
+}
+
+// SortTasksRequest 表示任务排序请求体。
+type SortTasksRequest struct {
+	// TaskIDs 按最新顺序排列的任务ID列表
+	TaskIDs []int64 `json:"task_ids"`
 }
 
 // DeleteTaskResponse 表示删除任务成功响应。

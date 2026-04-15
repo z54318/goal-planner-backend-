@@ -32,6 +32,8 @@ func NewHandler(db *sql.DB, generator *appai.Client) *Handler {
 // RegisterProtectedRoutes 注册计划模块受保护路由。
 func (h *Handler) RegisterProtectedRoutes(router *gin.RouterGroup) {
 	router.GET("/goals/:id/plan", h.GetPlan)
+	router.GET("/plans/:id/next-step", h.GetSuggestion)
+	router.POST("/plans/:id/next-step", h.SuggestNextStep)
 	router.POST("/goals/:id/generate-plan", h.GeneratePlan)
 	router.POST("/goals/:id/regenerate-plan", h.RegeneratePlan)
 	router.PUT("/goals/:id/plan", h.UpdatePlan)
@@ -77,6 +79,103 @@ func (h *Handler) GetPlan(c *gin.Context) {
 	}
 
 	response.Success(c, plan)
+}
+
+// GetSuggestion 查询计划执行建议
+// @Summary 查询计划执行建议
+// @Tags plans
+// @ID planNextStepGet
+// @Produce json
+// @Param id path int true "计划ID"
+// @Security BearerAuth
+// @Success 200 {object} NextStepSuggestionResponse
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/plans/{id}/next-step [get]
+// GetSuggestion 返回当前登录用户的一条已保存计划执行建议。
+func (h *Handler) GetSuggestion(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	planID, ok := currentPlanID(c)
+	if !ok {
+		response.Fail(c, http.StatusBadRequest, "计划ID不合法")
+		return
+	}
+
+	suggestion, err := h.repo.GetSavedSuggestionByID(c.Request.Context(), userID, planID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "执行建议不存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "查询执行建议失败")
+		return
+	}
+
+	response.Success(c, suggestion)
+}
+
+// SuggestNextStep 获取计划执行建议
+// @Summary 生成计划执行建议
+// @Tags plans
+// @ID planNextStepSuggest
+// @Produce json
+// @Param id path int true "计划ID"
+// @Security BearerAuth
+// @Success 200 {object} NextStepSuggestionResponse
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 502 {object} response.ErrorBody
+// @Failure 503 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/plans/{id}/next-step [post]
+// SuggestNextStep 为当前登录用户的一条计划生成并保存执行建议。
+func (h *Handler) SuggestNextStep(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	planID, ok := currentPlanID(c)
+	if !ok {
+		response.Fail(c, http.StatusBadRequest, "计划ID不合法")
+		return
+	}
+
+	input, err := h.repo.GetSuggestionContextByID(c.Request.Context(), userID, planID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "计划不存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "查询计划上下文失败")
+		return
+	}
+
+	suggestion, err := h.generator.SuggestNextStepForPlan(c.Request.Context(), input)
+	if err != nil {
+		handleSuggestionError(c, err, "生成计划执行建议失败")
+		return
+	}
+
+	if err := h.repo.SaveSuggestionByID(c.Request.Context(), userID, planID, suggestion); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "计划不存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "保存执行建议失败")
+		return
+	}
+
+	response.Success(c, suggestion)
 }
 
 // GeneratePlan 生成目标计划
@@ -396,4 +495,48 @@ func currentGoalID(c *gin.Context) (int64, bool) {
 	}
 
 	return goalID, true
+}
+
+// currentPlanID 从路由参数中取出计划 ID。
+func currentPlanID(c *gin.Context) (int64, bool) {
+	planIDText := c.Param("id")
+	planID, err := strconv.ParseInt(planIDText, 10, 64)
+	if err != nil || planID <= 0 {
+		return 0, false
+	}
+
+	return planID, true
+}
+
+func handleSuggestionError(c *gin.Context, err error, fallbackMessage string) {
+	if errors.Is(err, appai.ErrNotConfigured) {
+		response.Fail(c, http.StatusServiceUnavailable, "AI服务未配置")
+		return
+	}
+	if errors.Is(err, appai.ErrInvalidResponse) {
+		response.Fail(c, http.StatusBadGateway, "AI返回结果不可解析")
+		return
+	}
+
+	var requestErr *appai.RequestError
+	if errors.As(err, &requestErr) {
+		switch requestErr.StatusCode {
+		case http.StatusUnauthorized, http.StatusForbidden:
+			response.Fail(c, http.StatusBadGateway, "AI鉴权失败，请检查密钥")
+			return
+		case http.StatusNotFound:
+			response.Fail(c, http.StatusBadGateway, "AI模型或接口地址不正确")
+			return
+		case http.StatusTooManyRequests:
+			response.Fail(c, http.StatusBadGateway, "AI请求过于频繁或额度不足")
+			return
+		default:
+			if requestErr.StatusCode >= http.StatusInternalServerError {
+				response.Fail(c, http.StatusBadGateway, "AI服务暂时不可用")
+				return
+			}
+		}
+	}
+
+	response.Fail(c, http.StatusBadGateway, fallbackMessage)
 }

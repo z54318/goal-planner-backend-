@@ -4,8 +4,65 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
+|[**phaseDelete**](#phasedelete) | **DELETE** /api/phases/{id} | 删除阶段|
 |[**phaseGet**](#phaseget) | **GET** /api/phases/{id} | 获取阶段详情|
+|[**phaseNextStepGet**](#phasenextstepget) | **GET** /api/phases/{id}/next-step | 查询阶段执行建议|
+|[**phaseNextStepSuggest**](#phasenextstepsuggest) | **POST** /api/phases/{id}/next-step | 生成阶段执行建议|
 |[**phaseUpdate**](#phaseupdate) | **PUT** /api/phases/{id} | 编辑阶段|
+
+# **phaseDelete**
+> ResponseBody phaseDelete()
+
+
+### Example
+
+```typescript
+import {
+    PhasesApi,
+    Configuration
+} from '@goal-planner/backend-sdk';
+
+const configuration = new Configuration();
+const apiInstance = new PhasesApi(configuration);
+
+let id: number; //阶段ID (default to undefined)
+
+const { status, data } = await apiInstance.phaseDelete(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**number**] | 阶段ID | defaults to undefined|
+
+
+### Return type
+
+**ResponseBody**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **phaseGet**
 > PhasePhaseResponse phaseGet()
@@ -58,6 +115,116 @@ const { status, data } = await apiInstance.phaseGet(
 |**401** | Unauthorized |  -  |
 |**404** | Not Found |  -  |
 |**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **phaseNextStepGet**
+> PhaseNextStepSuggestionResponse phaseNextStepGet()
+
+
+### Example
+
+```typescript
+import {
+    PhasesApi,
+    Configuration
+} from '@goal-planner/backend-sdk';
+
+const configuration = new Configuration();
+const apiInstance = new PhasesApi(configuration);
+
+let id: number; //阶段ID (default to undefined)
+
+const { status, data } = await apiInstance.phaseNextStepGet(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**number**] | 阶段ID | defaults to undefined|
+
+
+### Return type
+
+**PhaseNextStepSuggestionResponse**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **phaseNextStepSuggest**
+> PhaseNextStepSuggestionResponse phaseNextStepSuggest()
+
+
+### Example
+
+```typescript
+import {
+    PhasesApi,
+    Configuration
+} from '@goal-planner/backend-sdk';
+
+const configuration = new Configuration();
+const apiInstance = new PhasesApi(configuration);
+
+let id: number; //阶段ID (default to undefined)
+
+const { status, data } = await apiInstance.phaseNextStepSuggest(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**number**] | 阶段ID | defaults to undefined|
+
+
+### Return type
+
+**PhaseNextStepSuggestionResponse**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+|**502** | Bad Gateway |  -  |
+|**503** | Service Unavailable |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

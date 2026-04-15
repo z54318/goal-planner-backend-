@@ -66,23 +66,33 @@ Class | Method | HTTP request | Description
 *MenusApi* | [**adminMenuGet**](docs/MenusApi.md#adminmenuget) | **GET** /api/admin/menus/{id} | 获取菜单详情
 *MenusApi* | [**adminMenuUpdate**](docs/MenusApi.md#adminmenuupdate) | **PUT** /api/admin/menus/{id} | 更新菜单
 *MenusApi* | [**adminMenusList**](docs/MenusApi.md#adminmenuslist) | **GET** /api/admin/menus | 获取菜单列表
+*PhasesApi* | [**phaseDelete**](docs/PhasesApi.md#phasedelete) | **DELETE** /api/phases/{id} | 删除阶段
 *PhasesApi* | [**phaseGet**](docs/PhasesApi.md#phaseget) | **GET** /api/phases/{id} | 获取阶段详情
+*PhasesApi* | [**phaseNextStepGet**](docs/PhasesApi.md#phasenextstepget) | **GET** /api/phases/{id}/next-step | 查询阶段执行建议
+*PhasesApi* | [**phaseNextStepSuggest**](docs/PhasesApi.md#phasenextstepsuggest) | **POST** /api/phases/{id}/next-step | 生成阶段执行建议
 *PhasesApi* | [**phaseUpdate**](docs/PhasesApi.md#phaseupdate) | **PUT** /api/phases/{id} | 编辑阶段
 *PlansApi* | [**goalPlanDelete**](docs/PlansApi.md#goalplandelete) | **DELETE** /api/goals/{id}/plan | 删除目标计划
 *PlansApi* | [**goalPlanGenerate**](docs/PlansApi.md#goalplangenerate) | **POST** /api/goals/{id}/generate-plan | 生成目标计划
 *PlansApi* | [**goalPlanGet**](docs/PlansApi.md#goalplanget) | **GET** /api/goals/{id}/plan | 获取目标计划
 *PlansApi* | [**goalPlanRegenerate**](docs/PlansApi.md#goalplanregenerate) | **POST** /api/goals/{id}/regenerate-plan | 重新生成目标计划
 *PlansApi* | [**goalPlanUpdate**](docs/PlansApi.md#goalplanupdate) | **PUT** /api/goals/{id}/plan | 编辑目标计划
+*PlansApi* | [**planNextStepGet**](docs/PlansApi.md#plannextstepget) | **GET** /api/plans/{id}/next-step | 查询计划执行建议
+*PlansApi* | [**planNextStepSuggest**](docs/PlansApi.md#plannextstepsuggest) | **POST** /api/plans/{id}/next-step | 生成计划执行建议
 *RbacApi* | [**adminPermissionCreate**](docs/RbacApi.md#adminpermissioncreate) | **POST** /api/admin/permissions | 新增权限
 *RbacApi* | [**adminPermissionDelete**](docs/RbacApi.md#adminpermissiondelete) | **DELETE** /api/admin/permissions/{id} | 删除权限
 *RbacApi* | [**adminPermissionUpdate**](docs/RbacApi.md#adminpermissionupdate) | **PUT** /api/admin/permissions/{id} | 更新权限
 *RbacApi* | [**adminPermissionsList**](docs/RbacApi.md#adminpermissionslist) | **GET** /api/admin/permissions | 获取权限列表
+*RbacApi* | [**adminRoleCreate**](docs/RbacApi.md#adminrolecreate) | **POST** /api/admin/roles | 新增角色
+*RbacApi* | [**adminRoleDelete**](docs/RbacApi.md#adminroledelete) | **DELETE** /api/admin/roles/{id} | 删除角色
 *RbacApi* | [**adminRolePermissionsGet**](docs/RbacApi.md#adminrolepermissionsget) | **GET** /api/admin/roles/{id}/permissions | 获取角色权限绑定
 *RbacApi* | [**adminRolePermissionsUpdate**](docs/RbacApi.md#adminrolepermissionsupdate) | **PUT** /api/admin/roles/{id}/permissions | 更新角色权限绑定
 *RbacApi* | [**adminRolesList**](docs/RbacApi.md#adminroleslist) | **GET** /api/admin/roles | 获取角色列表
+*TasksApi* | [**phaseTasksSort**](docs/TasksApi.md#phasetaskssort) | **PUT** /api/phases/{id}/tasks/sort | 调整阶段任务顺序
 *TasksApi* | [**taskCreate**](docs/TasksApi.md#taskcreate) | **POST** /api/tasks | 新增任务
 *TasksApi* | [**taskDelete**](docs/TasksApi.md#taskdelete) | **DELETE** /api/tasks/{id} | 删除任务
 *TasksApi* | [**taskGet**](docs/TasksApi.md#taskget) | **GET** /api/tasks/{id} | 获取任务详情
+*TasksApi* | [**taskNextStepGet**](docs/TasksApi.md#tasknextstepget) | **GET** /api/tasks/{id}/next-step | 查询任务执行建议
+*TasksApi* | [**taskNextStepSuggest**](docs/TasksApi.md#tasknextstepsuggest) | **POST** /api/tasks/{id}/next-step | 生成任务执行建议
 *TasksApi* | [**taskUpdate**](docs/TasksApi.md#taskupdate) | **PUT** /api/tasks/{id} | 编辑任务
 *TasksApi* | [**taskUpdateStatus**](docs/TasksApi.md#taskupdatestatus) | **PATCH** /api/tasks/{id}/status | 更新任务状态
 *TasksApi* | [**tasksList**](docs/TasksApi.md#taskslist) | **GET** /api/tasks | 获取任务列表
@@ -115,9 +125,13 @@ Class | Method | HTTP request | Description
  - [MenuMenuListResponse](docs/MenuMenuListResponse.md)
  - [MenuMenuResponse](docs/MenuMenuResponse.md)
  - [MenuUpdateMenuRequest](docs/MenuUpdateMenuRequest.md)
+ - [PhaseNextStepSuggestion](docs/PhaseNextStepSuggestion.md)
+ - [PhaseNextStepSuggestionResponse](docs/PhaseNextStepSuggestionResponse.md)
  - [PhasePhase](docs/PhasePhase.md)
  - [PhasePhaseResponse](docs/PhasePhaseResponse.md)
  - [PhaseUpdatePhaseRequest](docs/PhaseUpdatePhaseRequest.md)
+ - [PlanNextStepSuggestion](docs/PlanNextStepSuggestion.md)
+ - [PlanNextStepSuggestionResponse](docs/PlanNextStepSuggestionResponse.md)
  - [PlanPhase](docs/PlanPhase.md)
  - [PlanPlan](docs/PlanPlan.md)
  - [PlanPlanResponse](docs/PlanPlanResponse.md)
@@ -126,6 +140,7 @@ Class | Method | HTTP request | Description
  - [PlanTaskStatus](docs/PlanTaskStatus.md)
  - [PlanUpdatePlanRequest](docs/PlanUpdatePlanRequest.md)
  - [RbacCreatePermissionRequest](docs/RbacCreatePermissionRequest.md)
+ - [RbacCreateRoleRequest](docs/RbacCreateRoleRequest.md)
  - [RbacPermission](docs/RbacPermission.md)
  - [RbacPermissionListResponse](docs/RbacPermissionListResponse.md)
  - [RbacPermissionResponse](docs/RbacPermissionResponse.md)
@@ -133,6 +148,7 @@ Class | Method | HTTP request | Description
  - [RbacRoleListResponse](docs/RbacRoleListResponse.md)
  - [RbacRolePermissionIDsData](docs/RbacRolePermissionIDsData.md)
  - [RbacRolePermissionIDsResponse](docs/RbacRolePermissionIDsResponse.md)
+ - [RbacRoleResponse](docs/RbacRoleResponse.md)
  - [RbacUpdatePermissionRequest](docs/RbacUpdatePermissionRequest.md)
  - [RbacUpdateRolePermissionsRequest](docs/RbacUpdateRolePermissionsRequest.md)
  - [ResponseBody](docs/ResponseBody.md)
@@ -140,6 +156,9 @@ Class | Method | HTTP request | Description
  - [TaskCreateTaskRequest](docs/TaskCreateTaskRequest.md)
  - [TaskDeleteTaskData](docs/TaskDeleteTaskData.md)
  - [TaskDeleteTaskResponse](docs/TaskDeleteTaskResponse.md)
+ - [TaskNextStepSuggestion](docs/TaskNextStepSuggestion.md)
+ - [TaskNextStepSuggestionResponse](docs/TaskNextStepSuggestionResponse.md)
+ - [TaskSortTasksRequest](docs/TaskSortTasksRequest.md)
  - [TaskTask](docs/TaskTask.md)
  - [TaskTaskListData](docs/TaskTaskListData.md)
  - [TaskTaskListResponse](docs/TaskTaskListResponse.md)

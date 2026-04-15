@@ -18,6 +18,14 @@ type Role struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// CreateRoleRequest 表示新增角色请求体。
+type CreateRoleRequest struct {
+	// Name 角色名称
+	Name string `json:"name"`
+	// Code 角色编码
+	Code string `json:"code"`
+}
+
 // Permission 表示一条权限记录。
 type Permission struct {
 	// ID 权限ID
@@ -59,6 +67,13 @@ type RoleListResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    []Role `json:"data"`
+}
+
+// RoleResponse 表示单个角色成功响应。
+type RoleResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    Role   `json:"data"`
 }
 
 // PermissionListResponse 表示权限列表成功响应。

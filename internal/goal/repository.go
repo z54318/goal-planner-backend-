@@ -3,6 +3,8 @@ package goal
 import (
 	"context"
 	"database/sql"
+
+	storedsuggestion "goal-planner/internal/common/suggestion"
 )
 
 // Repository 负责 goal 模块和数据库打交道。
@@ -244,6 +246,63 @@ func (r *Repository) Delete(ctx context.Context, userID int64, id int64) error {
 		return err
 	}
 	defer tx.Rollback()
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id IN (
+				SELECT p.id
+				FROM plans p
+				WHERE p.goal_id = ? AND p.user_id = ?
+			)
+		`,
+		userID,
+		string(storedsuggestion.TargetTypePlan),
+		id,
+		userID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id IN (
+				SELECT ph.id
+				FROM phases ph
+				INNER JOIN plans p ON p.id = ph.plan_id
+				WHERE p.goal_id = ? AND p.user_id = ?
+			)
+		`,
+		userID,
+		string(storedsuggestion.TargetTypePhase),
+		id,
+		userID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id IN (
+				SELECT t.id
+				FROM tasks t
+				INNER JOIN phases ph ON ph.id = t.phase_id
+				INNER JOIN plans p ON p.id = ph.plan_id
+				WHERE p.goal_id = ? AND p.user_id = ?
+			)
+		`,
+		userID,
+		string(storedsuggestion.TargetTypeTask),
+		id,
+		userID,
+	); err != nil {
+		return err
+	}
 
 	result, err := tx.ExecContext(
 		ctx,

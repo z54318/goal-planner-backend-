@@ -22,6 +22,8 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
+import type { PlanNextStepSuggestionResponse } from '../models';
+// @ts-ignore
 import type { PlanPlanResponse } from '../models';
 // @ts-ignore
 import type { PlanUpdatePlanRequest } from '../models';
@@ -224,6 +226,80 @@ export const PlansApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary 查询计划执行建议
+         * @param {number} id 计划ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        planNextStepGet: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('planNextStepGet', 'id', id)
+            const localVarPath = `/api/plans/{id}/next-step`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 生成计划执行建议
+         * @param {number} id 计划ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        planNextStepSuggest: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('planNextStepSuggest', 'id', id)
+            const localVarPath = `/api/plans/{id}/next-step`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -299,6 +375,32 @@ export const PlansApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['PlansApi.goalPlanUpdate']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @summary 查询计划执行建议
+         * @param {number} id 计划ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async planNextStepGet(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlanNextStepSuggestionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.planNextStepGet(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlansApi.planNextStepGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 生成计划执行建议
+         * @param {number} id 计划ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async planNextStepSuggest(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlanNextStepSuggestionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.planNextStepSuggest(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlansApi.planNextStepSuggest']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -357,6 +459,26 @@ export const PlansApiFactory = function (configuration?: Configuration, basePath
          */
         goalPlanUpdate(requestParameters: PlansApiGoalPlanUpdateRequest, options?: RawAxiosRequestConfig): AxiosPromise<PlanPlanResponse> {
             return localVarFp.goalPlanUpdate(requestParameters.id, requestParameters.request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 查询计划执行建议
+         * @param {PlansApiPlanNextStepGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        planNextStepGet(requestParameters: PlansApiPlanNextStepGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PlanNextStepSuggestionResponse> {
+            return localVarFp.planNextStepGet(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 生成计划执行建议
+         * @param {PlansApiPlanNextStepSuggestRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        planNextStepSuggest(requestParameters: PlansApiPlanNextStepSuggestRequest, options?: RawAxiosRequestConfig): AxiosPromise<PlanNextStepSuggestionResponse> {
+            return localVarFp.planNextStepSuggest(requestParameters.id, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -417,6 +539,26 @@ export interface PlansApiGoalPlanUpdateRequest {
 }
 
 /**
+ * Request parameters for planNextStepGet operation in PlansApi.
+ */
+export interface PlansApiPlanNextStepGetRequest {
+    /**
+     * 计划ID
+     */
+    readonly id: number
+}
+
+/**
+ * Request parameters for planNextStepSuggest operation in PlansApi.
+ */
+export interface PlansApiPlanNextStepSuggestRequest {
+    /**
+     * 计划ID
+     */
+    readonly id: number
+}
+
+/**
  * PlansApi - object-oriented interface
  */
 export class PlansApi extends BaseAPI {
@@ -473,6 +615,28 @@ export class PlansApi extends BaseAPI {
      */
     public goalPlanUpdate(requestParameters: PlansApiGoalPlanUpdateRequest, options?: RawAxiosRequestConfig) {
         return PlansApiFp(this.configuration).goalPlanUpdate(requestParameters.id, requestParameters.request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 查询计划执行建议
+     * @param {PlansApiPlanNextStepGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public planNextStepGet(requestParameters: PlansApiPlanNextStepGetRequest, options?: RawAxiosRequestConfig) {
+        return PlansApiFp(this.configuration).planNextStepGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 生成计划执行建议
+     * @param {PlansApiPlanNextStepSuggestRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public planNextStepSuggest(requestParameters: PlansApiPlanNextStepSuggestRequest, options?: RawAxiosRequestConfig) {
+        return PlansApiFp(this.configuration).planNextStepSuggest(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

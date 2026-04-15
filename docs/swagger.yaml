@@ -388,6 +388,35 @@ definitions:
         description: SortOrder 排序值
         type: integer
     type: object
+  phase.NextStepSuggestion:
+    properties:
+      checklist:
+        description: Checklist 执行清单
+        items:
+          type: string
+        type: array
+      next_action:
+        description: NextAction 建议执行动作
+        type: string
+      reason:
+        description: Reason 建议原因
+        type: string
+      risk:
+        description: Risk 主要风险
+        type: string
+      summary:
+        description: Summary 执行建议摘要
+        type: string
+    type: object
+  phase.NextStepSuggestionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/phase.NextStepSuggestion'
+      message:
+        type: string
+    type: object
   phase.Phase:
     properties:
       created_at:
@@ -434,6 +463,35 @@ definitions:
         type: integer
       title:
         description: Title 阶段标题
+        type: string
+    type: object
+  plan.NextStepSuggestion:
+    properties:
+      checklist:
+        description: Checklist 执行清单
+        items:
+          type: string
+        type: array
+      next_action:
+        description: NextAction 建议执行动作
+        type: string
+      reason:
+        description: Reason 建议原因
+        type: string
+      risk:
+        description: Risk 主要风险
+        type: string
+      summary:
+        description: Summary 执行建议摘要
+        type: string
+    type: object
+  plan.NextStepSuggestionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/plan.NextStepSuggestion'
+      message:
         type: string
     type: object
   plan.Phase:
@@ -590,6 +648,15 @@ definitions:
         description: Name 权限名称
         type: string
     type: object
+  rbac.CreateRoleRequest:
+    properties:
+      code:
+        description: Code 角色编码
+        type: string
+      name:
+        description: Name 角色名称
+        type: string
+    type: object
   rbac.Permission:
     properties:
       code:
@@ -682,6 +749,15 @@ definitions:
       message:
         type: string
     type: object
+  rbac.RoleResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/rbac.Role'
+      message:
+        type: string
+    type: object
   rbac.UpdatePermissionRequest:
     properties:
       code:
@@ -760,6 +836,43 @@ definitions:
         $ref: '#/definitions/task.DeleteTaskData'
       message:
         type: string
+    type: object
+  task.NextStepSuggestion:
+    properties:
+      checklist:
+        description: Checklist 执行清单
+        items:
+          type: string
+        type: array
+      next_action:
+        description: NextAction 建议执行动作
+        type: string
+      reason:
+        description: Reason 建议原因
+        type: string
+      risk:
+        description: Risk 主要风险
+        type: string
+      summary:
+        description: Summary 执行建议摘要
+        type: string
+    type: object
+  task.NextStepSuggestionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/task.NextStepSuggestion'
+      message:
+        type: string
+    type: object
+  task.SortTasksRequest:
+    properties:
+      task_ids:
+        description: TaskIDs 按最新顺序排列的任务ID列表
+        items:
+          type: integer
+        type: array
     type: object
   task.Task:
     properties:
@@ -1335,6 +1448,78 @@ paths:
       security:
       - BearerAuth: []
       summary: 获取角色列表
+      tags:
+      - rbac
+    post:
+      consumes:
+      - application/json
+      operationId: adminRoleCreate
+      parameters:
+      - description: 角色参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rbac.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/rbac.RoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 新增角色
+      tags:
+      - rbac
+  /api/admin/roles/{id}:
+    delete:
+      operationId: adminRoleDelete
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除角色
       tags:
       - rbac
   /api/admin/roles/{id}/permissions:
@@ -2025,6 +2210,42 @@ paths:
       tags:
       - goals
   /api/phases/{id}:
+    delete:
+      operationId: phaseDelete
+      parameters:
+      - description: 阶段ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 删除阶段
+      tags:
+      - phases
     get:
       operationId: phaseGet
       parameters:
@@ -2105,6 +2326,213 @@ paths:
       summary: 编辑阶段
       tags:
       - phases
+  /api/phases/{id}/next-step:
+    get:
+      operationId: phaseNextStepGet
+      parameters:
+      - description: 阶段ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phase.NextStepSuggestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 查询阶段执行建议
+      tags:
+      - phases
+    post:
+      operationId: phaseNextStepSuggest
+      parameters:
+      - description: 阶段ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/phase.NextStepSuggestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 生成阶段执行建议
+      tags:
+      - phases
+  /api/phases/{id}/tasks/sort:
+    put:
+      consumes:
+      - application/json
+      operationId: phaseTasksSort
+      parameters:
+      - description: 阶段ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务排序信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.SortTasksRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Body'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 调整阶段任务顺序
+      tags:
+      - tasks
+  /api/plans/{id}/next-step:
+    get:
+      operationId: planNextStepGet
+      parameters:
+      - description: 计划ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.NextStepSuggestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 查询计划执行建议
+      tags:
+      - plans
+    post:
+      operationId: planNextStepSuggest
+      parameters:
+      - description: 计划ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/plan.NextStepSuggestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 生成计划执行建议
+      tags:
+      - plans
   /api/tasks:
     get:
       operationId: tasksList
@@ -2307,6 +2735,87 @@ paths:
       security:
       - BearerAuth: []
       summary: 编辑任务
+      tags:
+      - tasks
+  /api/tasks/{id}/next-step:
+    get:
+      operationId: taskNextStepGet
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.NextStepSuggestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 查询任务执行建议
+      tags:
+      - tasks
+    post:
+      operationId: taskNextStepSuggest
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.NextStepSuggestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorBody'
+      security:
+      - BearerAuth: []
+      summary: 生成任务执行建议
       tags:
       - tasks
   /api/tasks/{id}/status:

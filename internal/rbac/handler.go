@@ -28,6 +28,7 @@ func NewHandler(db *sql.DB) *Handler {
 // RegisterProtectedRoutes 注册 RBAC 管理受保护路由。
 func (h *Handler) RegisterProtectedRoutes(router *gin.RouterGroup) {
 	router.GET("/admin/roles", h.ListRoles)
+	router.POST("/admin/roles", h.CreateRole)
 	router.GET("/admin/roles/:id/permissions", h.GetRolePermissions)
 	router.PUT("/admin/roles/:id/permissions", h.UpdateRolePermissions)
 
@@ -55,6 +56,63 @@ func (h *Handler) ListRoles(c *gin.Context) {
 	}
 
 	response.Success(c, roles)
+}
+
+// CreateRole 新增角色
+// @Summary 新增角色
+// @Tags rbac
+// @ID adminRoleCreate
+// @Accept json
+// @Produce json
+// @Param request body CreateRoleRequest true "角色参数"
+// @Security BearerAuth
+// @Success 200 {object} RoleResponse
+// @Failure 400 {object} response.ErrorBody
+// @Failure 401 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/admin/roles [post]
+func (h *Handler) CreateRole(c *gin.Context) {
+	var req CreateRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, http.StatusBadRequest, "请求体格式不正确")
+		return
+	}
+
+	normalizePermissionNames(&req.Name, &req.Code)
+	if req.Name == "" || req.Code == "" {
+		response.Fail(c, http.StatusBadRequest, "角色名称和编码不能为空")
+		return
+	}
+
+	role, err := h.repo.CreateRole(c.Request.Context(), req)
+	if err != nil {
+		var mysqlErr *mySQLDriver.MySQLError
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+			response.Fail(c, http.StatusBadRequest, "角色编码已存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "创建角色失败")
+		return
+	}
+
+	response.Success(c, role)
+}
+
+// DeleteRole 删除角色
+// @Summary 删除角色
+// @Tags rbac
+// @ID adminRoleDelete
+// @Produce json
+// @Param id path int true "角色ID"
+// @Security BearerAuth
+// @Success 200 {object} response.Body
+// @Failure 400 {object} response.ErrorBody
+// @Failure 401 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/admin/roles/{id} [delete]
+func (h *Handler) DeleteRole(c *gin.Context) {
+
 }
 
 // GetRolePermissions 获取角色权限绑定

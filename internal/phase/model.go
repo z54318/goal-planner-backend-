@@ -29,6 +29,27 @@ type PhaseResponse struct {
 	Data    Phase  `json:"data"`
 }
 
+// NextStepSuggestion 表示执行建议。
+type NextStepSuggestion struct {
+	// Summary 执行建议摘要
+	Summary string `json:"summary"`
+	// NextAction 建议执行动作
+	NextAction string `json:"next_action"`
+	// Reason 建议原因
+	Reason string `json:"reason"`
+	// Checklist 执行清单
+	Checklist []string `json:"checklist"`
+	// Risk 主要风险
+	Risk string `json:"risk"`
+}
+
+// NextStepSuggestionResponse 表示执行建议成功响应。
+type NextStepSuggestionResponse struct {
+	Code    int                `json:"code"`
+	Message string             `json:"message"`
+	Data    NextStepSuggestion `json:"data"`
+}
+
 // UpdatePhaseRequest 表示编辑阶段请求体。
 type UpdatePhaseRequest struct {
 	// Title 阶段标题

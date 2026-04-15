@@ -88,11 +88,11 @@ func main() {
 	planHandler.RegisterProtectedRoutes(protected)
 
 	// 注册阶段模块受保护路由。
-	phaseHandler := phase.NewHandler(database)
+	phaseHandler := phase.NewHandler(database, aiClient)
 	phaseHandler.RegisterProtectedRoutes(protected)
 
 	// 注册任务模块受保护路由。
-	taskHandler := task.NewHandler(database)
+	taskHandler := task.NewHandler(database, aiClient)
 	taskHandler.RegisterProtectedRoutes(protected)
 
 	// 注册菜单管理受保护路由。

@@ -10,17 +10,20 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"goal-planner/internal/common/response"
+	appai "goal-planner/internal/infra/ai"
 )
 
 // Handler 负责处理 task 模块的 HTTP 请求。
 type Handler struct {
-	repo *Repository
+	repo      *Repository
+	generator *appai.Client
 }
 
 // NewHandler 创建任务模块处理器。
-func NewHandler(db *sql.DB) *Handler {
+func NewHandler(db *sql.DB, generator *appai.Client) *Handler {
 	return &Handler{
-		repo: NewRepository(db),
+		repo:      NewRepository(db),
+		generator: generator,
 	}
 }
 
@@ -28,8 +31,11 @@ func NewHandler(db *sql.DB) *Handler {
 func (h *Handler) RegisterProtectedRoutes(router *gin.RouterGroup) {
 	router.GET("/tasks", h.ListTasks)
 	router.GET("/tasks/:id", h.GetTask)
+	router.GET("/tasks/:id/next-step", h.GetSuggestion)
+	router.POST("/tasks/:id/next-step", h.SuggestNextStep)
 	router.POST("/tasks", h.CreateTask)
 	router.PUT("/tasks/:id", h.UpdateTask)
+	router.PUT("/phases/:id/tasks/sort", h.SortTasks)
 	router.PATCH("/tasks/:id/status", h.UpdateTaskStatus)
 	router.DELETE("/tasks/:id", h.DeleteTask)
 }
@@ -128,6 +134,103 @@ func (h *Handler) GetTask(c *gin.Context) {
 	}
 
 	response.Success(c, task)
+}
+
+// GetSuggestion 查询任务执行建议
+// @Summary 查询任务执行建议
+// @Tags tasks
+// @ID taskNextStepGet
+// @Produce json
+// @Param id path int true "任务ID"
+// @Security BearerAuth
+// @Success 200 {object} NextStepSuggestionResponse
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/tasks/{id}/next-step [get]
+// GetSuggestion 返回当前登录用户的一条已保存任务执行建议。
+func (h *Handler) GetSuggestion(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	taskID, ok := currentTaskID(c)
+	if !ok {
+		response.Fail(c, http.StatusBadRequest, "任务ID不合法")
+		return
+	}
+
+	suggestion, err := h.repo.GetSavedSuggestionByID(c.Request.Context(), userID, taskID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "执行建议不存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "查询执行建议失败")
+		return
+	}
+
+	response.Success(c, suggestion)
+}
+
+// SuggestNextStep 获取任务执行建议
+// @Summary 生成任务执行建议
+// @Tags tasks
+// @ID taskNextStepSuggest
+// @Produce json
+// @Param id path int true "任务ID"
+// @Security BearerAuth
+// @Success 200 {object} NextStepSuggestionResponse
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 502 {object} response.ErrorBody
+// @Failure 503 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/tasks/{id}/next-step [post]
+// SuggestNextStep 为当前登录用户的一条任务生成并保存执行建议。
+func (h *Handler) SuggestNextStep(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	taskID, ok := currentTaskID(c)
+	if !ok {
+		response.Fail(c, http.StatusBadRequest, "任务ID不合法")
+		return
+	}
+
+	input, err := h.repo.GetSuggestionContextByID(c.Request.Context(), userID, taskID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "任务不存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "查询任务上下文失败")
+		return
+	}
+
+	suggestion, err := h.generator.SuggestNextStepForTask(c.Request.Context(), input)
+	if err != nil {
+		handleSuggestionError(c, err, "生成任务执行建议失败")
+		return
+	}
+
+	if err := h.repo.SaveSuggestionByID(c.Request.Context(), userID, taskID, suggestion); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "任务不存在")
+			return
+		}
+		response.Fail(c, http.StatusInternalServerError, "保存执行建议失败")
+		return
+	}
+
+	response.Success(c, suggestion)
 }
 
 // CreateTask 新增任务
@@ -229,6 +332,61 @@ func (h *Handler) UpdateTask(c *gin.Context) {
 	}
 
 	response.Success(c, task)
+}
+
+// SortTasks 调整阶段任务顺序
+// @Summary 调整阶段任务顺序
+// @Tags tasks
+// @ID phaseTasksSort
+// @Accept json
+// @Produce json
+// @Param id path int true "阶段ID"
+// @Param request body SortTasksRequest true "任务排序信息"
+// @Security BearerAuth
+// @Success 200 {object} response.Body
+// @Failure 401 {object} response.ErrorBody
+// @Failure 400 {object} response.ErrorBody
+// @Failure 404 {object} response.ErrorBody
+// @Failure 500 {object} response.ErrorBody
+// @Router /api/phases/{id}/tasks/sort [put]
+// SortTasks 根据前端拖拽后的任务ID顺序，批量更新某个阶段下任务的 sort_order。
+func (h *Handler) SortTasks(c *gin.Context) {
+	userID, ok := currentUserID(c)
+	if !ok {
+		response.Fail(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	phaseID, ok := currentPhaseID(c)
+	if !ok {
+		response.Fail(c, http.StatusBadRequest, "阶段ID不合法")
+		return
+	}
+
+	var req SortTasksRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, http.StatusBadRequest, "请求体格式不正确")
+		return
+	}
+
+	if !normalizeSortTasksRequest(&req) {
+		response.Fail(c, http.StatusBadRequest, "任务排序参数不合法")
+		return
+	}
+
+	if err := h.repo.SortByPhaseID(c.Request.Context(), userID, phaseID, req.TaskIDs); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			response.Fail(c, http.StatusNotFound, "阶段或任务不存在")
+			return
+		}
+
+		response.Fail(c, http.StatusInternalServerError, "调整任务顺序失败")
+		return
+	}
+
+	response.Success(c, gin.H{
+		"sorted": true,
+	})
 }
 
 // UpdateTaskStatus 更新任务状态
@@ -388,6 +546,25 @@ func normalizeTaskPagination(req *ListTasksRequest) {
 	}
 }
 
+func normalizeSortTasksRequest(req *SortTasksRequest) bool {
+	if len(req.TaskIDs) == 0 {
+		return false
+	}
+
+	seen := make(map[int64]struct{}, len(req.TaskIDs))
+	for _, taskID := range req.TaskIDs {
+		if taskID <= 0 {
+			return false
+		}
+		if _, exists := seen[taskID]; exists {
+			return false
+		}
+		seen[taskID] = struct{}{}
+	}
+
+	return true
+}
+
 func currentUserID(c *gin.Context) (int64, bool) {
 	userIDValue, exists := c.Get("user_id")
 	if !exists {
@@ -410,4 +587,47 @@ func currentTaskID(c *gin.Context) (int64, bool) {
 	}
 
 	return taskID, true
+}
+
+func currentPhaseID(c *gin.Context) (int64, bool) {
+	phaseIDText := c.Param("id")
+	phaseID, err := strconv.ParseInt(phaseIDText, 10, 64)
+	if err != nil || phaseID <= 0 {
+		return 0, false
+	}
+
+	return phaseID, true
+}
+
+func handleSuggestionError(c *gin.Context, err error, fallbackMessage string) {
+	if errors.Is(err, appai.ErrNotConfigured) {
+		response.Fail(c, http.StatusServiceUnavailable, "AI服务未配置")
+		return
+	}
+	if errors.Is(err, appai.ErrInvalidResponse) {
+		response.Fail(c, http.StatusBadGateway, "AI返回结果不可解析")
+		return
+	}
+
+	var requestErr *appai.RequestError
+	if errors.As(err, &requestErr) {
+		switch requestErr.StatusCode {
+		case http.StatusUnauthorized, http.StatusForbidden:
+			response.Fail(c, http.StatusBadGateway, "AI鉴权失败，请检查密钥")
+			return
+		case http.StatusNotFound:
+			response.Fail(c, http.StatusBadGateway, "AI模型或接口地址不正确")
+			return
+		case http.StatusTooManyRequests:
+			response.Fail(c, http.StatusBadGateway, "AI请求过于频繁或额度不足")
+			return
+		default:
+			if requestErr.StatusCode >= http.StatusInternalServerError {
+				response.Fail(c, http.StatusBadGateway, "AI服务暂时不可用")
+				return
+			}
+		}
+	}
+
+	response.Fail(c, http.StatusBadGateway, fallbackMessage)
 }

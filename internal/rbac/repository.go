@@ -8,6 +8,8 @@ import (
 )
 
 var (
+	// ErrRoleInUse 表示角色仍在使用中。
+	ErrRoleInUse = errors.New("role in use")
 	// ErrPermissionInUse 表示权限仍在使用中。
 	ErrPermissionInUse = errors.New("permission in use")
 	// ErrPermissionNotFound 表示权限不存在。
@@ -82,6 +84,88 @@ func (r *Repository) ListRoles(ctx context.Context) ([]Role, error) {
 	}
 
 	return roles, nil
+}
+
+// GetRoleByID 按ID查询单个角色。
+func (r *Repository) GetRoleByID(ctx context.Context, id int64) (Role, error) {
+	var role Role
+	err := r.db.QueryRowContext(ctx, `
+		SELECT id, name, code, created_at, updated_at
+		FROM roles
+		WHERE id = ?
+	`, id).Scan(
+		&role.ID,
+		&role.Name,
+		&role.Code,
+		&role.CreatedAt,
+		&role.UpdatedAt,
+	)
+	if err != nil {
+		return Role{}, err
+	}
+	return role, nil
+}
+
+// CreateRole 新增角色。
+func (r *Repository) CreateRole(ctx context.Context, req CreateRoleRequest) (Role, error) {
+	result, err := r.db.ExecContext(ctx, `
+		INSERT INTO roles (name, code)
+		VALUES (?, ?)
+	`, req.Name, req.Code)
+	if err != nil {
+		return Role{}, err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return Role{}, err
+	}
+
+	return r.GetRoleByID(ctx, id)
+}
+
+// DeleteRole 删除角色
+func (r *Repository) DeleteRole(ctx context.Context, roleID int64) error {
+	var exists int
+	err := r.db.QueryRowContext(ctx, `SELECT 1 FROM roles WHERE id = ?`, roleID).Scan(&exists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return sql.ErrNoRows
+		}
+		return err
+	}
+
+	var userBindCount int
+	if err := r.db.QueryRowContext(ctx, `SELECT COUNT(1) FROM user_roles WHERE role_id = ?`, roleID).Scan(&userBindCount); err != nil {
+		return err
+	}
+
+	if userBindCount > 0 {
+		return ErrRoleInUse
+	}
+
+	var permissionBindCount int
+	if err := r.db.QueryRowContext(ctx, `SELECT COUNT(1) FROM role_permissions WHERE role_id = ?`, roleID).Scan(&permissionBindCount); err != nil {
+		return err
+	}
+	if permissionBindCount > 0 {
+		return ErrRoleInUse
+	}
+
+	result, err := r.db.ExecContext(ctx, `DELETE FROM roles WHERE id = ?`, roleID)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+
+	return nil
 }
 
 // RoleExists 判断角色是否存在。

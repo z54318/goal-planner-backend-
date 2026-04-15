@@ -22,9 +22,13 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
+import type { PhaseNextStepSuggestionResponse } from '../models';
+// @ts-ignore
 import type { PhasePhaseResponse } from '../models';
 // @ts-ignore
 import type { PhaseUpdatePhaseRequest } from '../models';
+// @ts-ignore
+import type { ResponseBody } from '../models';
 // @ts-ignore
 import type { ResponseErrorBody } from '../models';
 /**
@@ -32,6 +36,43 @@ import type { ResponseErrorBody } from '../models';
  */
 export const PhasesApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary 删除阶段
+         * @param {number} id 阶段ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        phaseDelete: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('phaseDelete', 'id', id)
+            const localVarPath = `/api/phases/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary 获取阶段详情
@@ -52,6 +93,80 @@ export const PhasesApiAxiosParamCreator = function (configuration?: Configuratio
             }
 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 查询阶段执行建议
+         * @param {number} id 阶段ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        phaseNextStepGet: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('phaseNextStepGet', 'id', id)
+            const localVarPath = `/api/phases/{id}/next-step`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 生成阶段执行建议
+         * @param {number} id 阶段ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        phaseNextStepSuggest: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('phaseNextStepSuggest', 'id', id)
+            const localVarPath = `/api/phases/{id}/next-step`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -122,6 +237,19 @@ export const PhasesApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary 删除阶段
+         * @param {number} id 阶段ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async phaseDelete(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResponseBody>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.phaseDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PhasesApi.phaseDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary 获取阶段详情
          * @param {number} id 阶段ID
          * @param {*} [options] Override http request option.
@@ -131,6 +259,32 @@ export const PhasesApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.phaseGet(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['PhasesApi.phaseGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 查询阶段执行建议
+         * @param {number} id 阶段ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async phaseNextStepGet(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhaseNextStepSuggestionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.phaseNextStepGet(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PhasesApi.phaseNextStepGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 生成阶段执行建议
+         * @param {number} id 阶段ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async phaseNextStepSuggest(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PhaseNextStepSuggestionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.phaseNextStepSuggest(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PhasesApi.phaseNextStepSuggest']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -158,6 +312,16 @@ export const PhasesApiFactory = function (configuration?: Configuration, basePat
     return {
         /**
          * 
+         * @summary 删除阶段
+         * @param {PhasesApiPhaseDeleteRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        phaseDelete(requestParameters: PhasesApiPhaseDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResponseBody> {
+            return localVarFp.phaseDelete(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 获取阶段详情
          * @param {PhasesApiPhaseGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -165,6 +329,26 @@ export const PhasesApiFactory = function (configuration?: Configuration, basePat
          */
         phaseGet(requestParameters: PhasesApiPhaseGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PhasePhaseResponse> {
             return localVarFp.phaseGet(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 查询阶段执行建议
+         * @param {PhasesApiPhaseNextStepGetRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        phaseNextStepGet(requestParameters: PhasesApiPhaseNextStepGetRequest, options?: RawAxiosRequestConfig): AxiosPromise<PhaseNextStepSuggestionResponse> {
+            return localVarFp.phaseNextStepGet(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 生成阶段执行建议
+         * @param {PhasesApiPhaseNextStepSuggestRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        phaseNextStepSuggest(requestParameters: PhasesApiPhaseNextStepSuggestRequest, options?: RawAxiosRequestConfig): AxiosPromise<PhaseNextStepSuggestionResponse> {
+            return localVarFp.phaseNextStepSuggest(requestParameters.id, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -180,9 +364,39 @@ export const PhasesApiFactory = function (configuration?: Configuration, basePat
 };
 
 /**
+ * Request parameters for phaseDelete operation in PhasesApi.
+ */
+export interface PhasesApiPhaseDeleteRequest {
+    /**
+     * 阶段ID
+     */
+    readonly id: number
+}
+
+/**
  * Request parameters for phaseGet operation in PhasesApi.
  */
 export interface PhasesApiPhaseGetRequest {
+    /**
+     * 阶段ID
+     */
+    readonly id: number
+}
+
+/**
+ * Request parameters for phaseNextStepGet operation in PhasesApi.
+ */
+export interface PhasesApiPhaseNextStepGetRequest {
+    /**
+     * 阶段ID
+     */
+    readonly id: number
+}
+
+/**
+ * Request parameters for phaseNextStepSuggest operation in PhasesApi.
+ */
+export interface PhasesApiPhaseNextStepSuggestRequest {
     /**
      * 阶段ID
      */
@@ -210,6 +424,17 @@ export interface PhasesApiPhaseUpdateRequest {
 export class PhasesApi extends BaseAPI {
     /**
      * 
+     * @summary 删除阶段
+     * @param {PhasesApiPhaseDeleteRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public phaseDelete(requestParameters: PhasesApiPhaseDeleteRequest, options?: RawAxiosRequestConfig) {
+        return PhasesApiFp(this.configuration).phaseDelete(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary 获取阶段详情
      * @param {PhasesApiPhaseGetRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -217,6 +442,28 @@ export class PhasesApi extends BaseAPI {
      */
     public phaseGet(requestParameters: PhasesApiPhaseGetRequest, options?: RawAxiosRequestConfig) {
         return PhasesApiFp(this.configuration).phaseGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 查询阶段执行建议
+     * @param {PhasesApiPhaseNextStepGetRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public phaseNextStepGet(requestParameters: PhasesApiPhaseNextStepGetRequest, options?: RawAxiosRequestConfig) {
+        return PhasesApiFp(this.configuration).phaseNextStepGet(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 生成阶段执行建议
+     * @param {PhasesApiPhaseNextStepSuggestRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public phaseNextStepSuggest(requestParameters: PhasesApiPhaseNextStepSuggestRequest, options?: RawAxiosRequestConfig) {
+        return PhasesApiFp(this.configuration).phaseNextStepSuggest(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

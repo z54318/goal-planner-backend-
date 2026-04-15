@@ -7,6 +7,7 @@ import (
 	"sort"
 	"time"
 
+	storedsuggestion "goal-planner/internal/common/suggestion"
 	appai "goal-planner/internal/infra/ai"
 )
 
@@ -73,6 +74,93 @@ func (r *Repository) GetByGoalID(ctx context.Context, userID int64, goalID int64
 	return plan, nil
 }
 
+// GetSuggestionContextByID 查询计划下一步建议所需上下文。
+func (r *Repository) GetSuggestionContextByID(ctx context.Context, userID int64, planID int64) (appai.PlanSuggestionInput, error) {
+	query := `
+		SELECT
+			g.title,
+			g.description,
+			g.status,
+			p.title,
+			p.overview
+		FROM plans p
+		INNER JOIN goals g ON g.id = p.goal_id
+		WHERE p.id = ? AND p.user_id = ?
+	`
+
+	var input appai.PlanSuggestionInput
+	err := r.db.QueryRowContext(ctx, query, planID, userID).Scan(
+		&input.GoalTitle,
+		&input.GoalDescription,
+		&input.GoalStatus,
+		&input.PlanTitle,
+		&input.PlanOverview,
+	)
+	if err != nil {
+		return appai.PlanSuggestionInput{}, err
+	}
+
+	rows, err := r.db.QueryContext(
+		ctx,
+		`
+			SELECT
+				ph.title,
+				ph.description,
+				COALESCE(SUM(CASE WHEN t.status = 'todo' THEN 1 ELSE 0 END), 0) AS todo_count,
+				COALESCE(SUM(CASE WHEN t.status = 'in_progress' THEN 1 ELSE 0 END), 0) AS in_progress_count,
+				COALESCE(SUM(CASE WHEN t.status = 'done' THEN 1 ELSE 0 END), 0) AS done_count
+			FROM phases ph
+			LEFT JOIN tasks t ON t.phase_id = ph.id
+			WHERE ph.plan_id = ?
+			GROUP BY ph.id, ph.title, ph.description, ph.sort_order
+			ORDER BY ph.sort_order ASC, ph.id ASC
+		`,
+		planID,
+	)
+	if err != nil {
+		return appai.PlanSuggestionInput{}, err
+	}
+	defer rows.Close()
+
+	input.Phases = make([]appai.PlanSuggestionPhase, 0)
+	for rows.Next() {
+		var phase appai.PlanSuggestionPhase
+		if err := rows.Scan(
+			&phase.Title,
+			&phase.Description,
+			&phase.TodoCount,
+			&phase.InProgressCount,
+			&phase.DoneCount,
+		); err != nil {
+			return appai.PlanSuggestionInput{}, err
+		}
+		input.Phases = append(input.Phases, phase)
+	}
+	if err := rows.Err(); err != nil {
+		return appai.PlanSuggestionInput{}, err
+	}
+
+	return input, nil
+}
+
+// SaveSuggestionByID 保存一条计划执行建议。
+func (r *Repository) SaveSuggestionByID(ctx context.Context, userID int64, planID int64, item appai.NextStepSuggestion) error {
+	if err := r.ensureOwnedPlanID(ctx, userID, planID); err != nil {
+		return err
+	}
+
+	return storedsuggestion.Upsert(ctx, r.db, userID, storedsuggestion.TargetTypePlan, planID, item)
+}
+
+// GetSavedSuggestionByID 查询一条已保存的计划执行建议。
+func (r *Repository) GetSavedSuggestionByID(ctx context.Context, userID int64, planID int64) (appai.NextStepSuggestion, error) {
+	if err := r.ensureOwnedPlanID(ctx, userID, planID); err != nil {
+		return appai.NextStepSuggestion{}, err
+	}
+
+	return storedsuggestion.Get(ctx, r.db, userID, storedsuggestion.TargetTypePlan, planID)
+}
+
 // UpdateByGoalID 更新当前用户某个目标下的计划基础信息。
 func (r *Repository) UpdateByGoalID(ctx context.Context, userID int64, goalID int64, req UpdatePlanRequest) (Plan, error) {
 	result, err := r.db.ExecContext(
@@ -121,6 +209,10 @@ func (r *Repository) DeleteByGoalID(ctx context.Context, userID int64, goalID in
 	).Scan(&planID)
 	// Scan:将数据库查出来的列值读出来填到变量里 &：表示取这个变量的地址，让它能往里面写值 如果不写&就是变量里的值
 	if err != nil {
+		return err
+	}
+
+	if err := r.deleteSuggestionRowsByPlanID(ctx, tx, userID, planID); err != nil {
 		return err
 	}
 
@@ -255,6 +347,9 @@ func (r *Repository) RegenerateGenerated(ctx context.Context, userID int64, goal
 	}
 
 	if err == nil {
+		if err := r.deleteSuggestionRowsByPlanID(ctx, tx, userID, existingPlanID); err != nil {
+			return Plan{}, err
+		}
 		if _, err := tx.ExecContext(ctx, `DELETE FROM tasks WHERE phase_id IN (SELECT id FROM phases WHERE plan_id = ?)`, existingPlanID); err != nil {
 			return Plan{}, err
 		}
@@ -458,4 +553,65 @@ func parseGeneratedTaskDeadline(value string) (*time.Time, error) {
 	}
 
 	return &deadline, nil
+}
+
+func (r *Repository) ensureOwnedPlanID(ctx context.Context, userID int64, planID int64) error {
+	var ownedPlanID int64
+	err := r.db.QueryRowContext(
+		ctx,
+		`SELECT id FROM plans WHERE id = ? AND user_id = ?`,
+		planID,
+		userID,
+	).Scan(&ownedPlanID)
+	return err
+}
+
+func (r *Repository) deleteSuggestionRowsByPlanID(ctx context.Context, tx *sql.Tx, userID int64, planID int64) error {
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id IN (
+				SELECT id FROM phases WHERE plan_id = ?
+			)
+		`,
+		userID,
+		string(storedsuggestion.TargetTypePhase),
+		planID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id IN (
+				SELECT t.id
+				FROM tasks t
+				INNER JOIN phases ph ON ph.id = t.phase_id
+				WHERE ph.plan_id = ?
+			)
+		`,
+		userID,
+		string(storedsuggestion.TargetTypeTask),
+		planID,
+	); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(
+		ctx,
+		`
+			DELETE FROM ai_suggestions
+			WHERE user_id = ? AND target_type = ? AND target_id = ?
+		`,
+		userID,
+		string(storedsuggestion.TargetTypePlan),
+		planID,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

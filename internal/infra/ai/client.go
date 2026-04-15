@@ -64,6 +64,61 @@ type TaskOutput struct {
 	Order         int    `json:"order"`
 }
 
+// NextStepSuggestion 表示 AI 给出的执行建议。
+type NextStepSuggestion struct {
+	Summary    string   `json:"summary"`
+	NextAction string   `json:"next_action"`
+	Reason     string   `json:"reason"`
+	Checklist  []string `json:"checklist"`
+	Risk       string   `json:"risk"`
+}
+
+// PlanSuggestionInput 表示计划执行建议所需上下文。
+type PlanSuggestionInput struct {
+	GoalTitle       string                `json:"goal_title"`
+	GoalDescription string                `json:"goal_description"`
+	GoalStatus      string                `json:"goal_status"`
+	PlanTitle       string                `json:"plan_title"`
+	PlanOverview    string                `json:"plan_overview"`
+	Phases          []PlanSuggestionPhase `json:"phases"`
+}
+
+// PlanSuggestionPhase 表示计划执行建议中的阶段摘要。
+type PlanSuggestionPhase struct {
+	Title           string `json:"title"`
+	Description     string `json:"description"`
+	TodoCount       int    `json:"todo_count"`
+	InProgressCount int    `json:"in_progress_count"`
+	DoneCount       int    `json:"done_count"`
+}
+
+// PhaseSuggestionInput 表示阶段执行建议所需上下文。
+type PhaseSuggestionInput struct {
+	GoalTitle        string                 `json:"goal_title"`
+	PlanTitle        string                 `json:"plan_title"`
+	PhaseTitle       string                 `json:"phase_title"`
+	PhaseDescription string                 `json:"phase_description"`
+	Tasks            []SuggestionTaskDigest `json:"tasks"`
+}
+
+// TaskSuggestionInput 表示任务执行建议所需上下文。
+type TaskSuggestionInput struct {
+	GoalTitle    string                 `json:"goal_title"`
+	PlanTitle    string                 `json:"plan_title"`
+	PhaseTitle   string                 `json:"phase_title"`
+	Task         SuggestionTaskDigest   `json:"task"`
+	SiblingTasks []SuggestionTaskDigest `json:"sibling_tasks"`
+}
+
+// SuggestionTaskDigest 表示执行建议上下文中的任务摘要。
+type SuggestionTaskDigest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+	Priority    string `json:"priority"`
+	Deadline    string `json:"deadline,omitempty"`
+}
+
 type planSkeletonOutput struct {
 	Title    string        `json:"title"`
 	Overview string        `json:"overview"`
@@ -216,6 +271,33 @@ func (c *Client) GeneratePlan(ctx context.Context, goal GoalInput) (PlanOutput, 
 	return output, nil
 }
 
+// SuggestNextStepForPlan 根据计划上下文生成执行建议。
+func (c *Client) SuggestNextStepForPlan(ctx context.Context, input PlanSuggestionInput) (NextStepSuggestion, error) {
+	return c.suggestNextStep(
+		ctx,
+		"你是一个项目执行助手。请根据用户当前的计划状态给出执行建议。你只能返回 JSON，且必须包含 summary、next_action、reason、checklist、risk 五个字段。summary 用一句中文概括当前最值得执行的重点；next_action 给出最具体的一步执行动作；reason 说明为什么现在应该执行这一步；checklist 返回 2 到 4 个可执行检查项；risk 用一句中文说明如果不执行这一步的主要风险。不要返回任何解释文字或 Markdown。",
+		input,
+	)
+}
+
+// SuggestNextStepForPhase 根据阶段上下文生成执行建议。
+func (c *Client) SuggestNextStepForPhase(ctx context.Context, input PhaseSuggestionInput) (NextStepSuggestion, error) {
+	return c.suggestNextStep(
+		ctx,
+		"你是一个阶段执行助手。请根据用户当前阶段和阶段内任务状态给出执行建议。你只能返回 JSON，且必须包含 summary、next_action、reason、checklist、risk 五个字段。summary 用一句中文概括当前阶段最该推进的重点；next_action 给出最具体的一步执行动作；reason 说明为什么现在应该执行这一步；checklist 返回 2 到 4 个可执行检查项；risk 用一句中文说明如果不执行这一步的主要风险。不要返回任何解释文字或 Markdown。",
+		input,
+	)
+}
+
+// SuggestNextStepForTask 根据任务上下文生成执行建议。
+func (c *Client) SuggestNextStepForTask(ctx context.Context, input TaskSuggestionInput) (NextStepSuggestion, error) {
+	return c.suggestNextStep(
+		ctx,
+		"你是一个任务执行助手。请根据当前任务和同阶段上下文给出执行建议。你只能返回 JSON，且必须包含 summary、next_action、reason、checklist、risk 五个字段。summary 用一句中文概括当前任务最该执行的重点；next_action 给出最具体的一步执行动作；reason 说明为什么现在应该执行这一步；checklist 返回 2 到 4 个可执行检查项；risk 用一句中文说明如果不执行这一步的主要风险。不要返回任何解释文字或 Markdown。",
+		input,
+	)
+}
+
 func isValidTaskPriority(priority string) bool {
 	switch priority {
 	case "high", "medium", "low":
@@ -223,6 +305,38 @@ func isValidTaskPriority(priority string) bool {
 	default:
 		return false
 	}
+}
+
+func (c *Client) suggestNextStep(ctx context.Context, systemPrompt string, input any) (NextStepSuggestion, error) {
+	if c.apiKey == "" || c.baseURL == "" || c.model == "" {
+		return NextStepSuggestion{}, ErrNotConfigured
+	}
+
+	payload, err := json.Marshal(input)
+	if err != nil {
+		return NextStepSuggestion{}, err
+	}
+
+	content, err := c.chatCompletion(
+		ctx,
+		systemPrompt,
+		"请基于以下 JSON 上下文给出建议：\n"+string(payload),
+	)
+	if err != nil {
+		return NextStepSuggestion{}, err
+	}
+
+	var suggestion NextStepSuggestion
+	if err := json.Unmarshal([]byte(content), &suggestion); err != nil {
+		return NextStepSuggestion{}, ErrInvalidResponse
+	}
+
+	normalizeSuggestion(&suggestion)
+	if suggestion.Summary == "" || suggestion.NextAction == "" || suggestion.Reason == "" {
+		return NextStepSuggestion{}, ErrInvalidResponse
+	}
+
+	return suggestion, nil
 }
 
 func (c *Client) chatCompletion(ctx context.Context, systemPrompt string, userPrompt string) (string, error) {
@@ -337,4 +451,25 @@ func applyDefaultTaskDeadlines(tasks []TaskOutput, goalDeadline *time.Time) {
 		}
 		tasks[i].Deadline = current.Format(time.RFC3339)
 	}
+}
+
+func normalizeSuggestion(suggestion *NextStepSuggestion) {
+	suggestion.Summary = limitRunes(strings.TrimSpace(suggestion.Summary), 80)
+	suggestion.NextAction = limitRunes(strings.TrimSpace(suggestion.NextAction), 120)
+	suggestion.Reason = limitRunes(strings.TrimSpace(suggestion.Reason), 180)
+	suggestion.Risk = limitRunes(strings.TrimSpace(suggestion.Risk), 120)
+
+	if len(suggestion.Checklist) > 4 {
+		suggestion.Checklist = suggestion.Checklist[:4]
+	}
+
+	items := make([]string, 0, len(suggestion.Checklist))
+	for _, item := range suggestion.Checklist {
+		item = limitRunes(strings.TrimSpace(item), 80)
+		if item == "" {
+			continue
+		}
+		items = append(items, item)
+	}
+	suggestion.Checklist = items
 }

@@ -9,6 +9,8 @@ All URIs are relative to *http://localhost*
 |[**goalPlanGet**](#goalplanget) | **GET** /api/goals/{id}/plan | 获取目标计划|
 |[**goalPlanRegenerate**](#goalplanregenerate) | **POST** /api/goals/{id}/regenerate-plan | 重新生成目标计划|
 |[**goalPlanUpdate**](#goalplanupdate) | **PUT** /api/goals/{id}/plan | 编辑目标计划|
+|[**planNextStepGet**](#plannextstepget) | **GET** /api/plans/{id}/next-step | 查询计划执行建议|
+|[**planNextStepSuggest**](#plannextstepsuggest) | **POST** /api/plans/{id}/next-step | 生成计划执行建议|
 
 # **goalPlanDelete**
 > ResponseBody goalPlanDelete()
@@ -282,6 +284,116 @@ const { status, data } = await apiInstance.goalPlanUpdate(
 |**401** | Unauthorized |  -  |
 |**404** | Not Found |  -  |
 |**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **planNextStepGet**
+> PlanNextStepSuggestionResponse planNextStepGet()
+
+
+### Example
+
+```typescript
+import {
+    PlansApi,
+    Configuration
+} from '@goal-planner/backend-sdk';
+
+const configuration = new Configuration();
+const apiInstance = new PlansApi(configuration);
+
+let id: number; //计划ID (default to undefined)
+
+const { status, data } = await apiInstance.planNextStepGet(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**number**] | 计划ID | defaults to undefined|
+
+
+### Return type
+
+**PlanNextStepSuggestionResponse**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **planNextStepSuggest**
+> PlanNextStepSuggestionResponse planNextStepSuggest()
+
+
+### Example
+
+```typescript
+import {
+    PlansApi,
+    Configuration
+} from '@goal-planner/backend-sdk';
+
+const configuration = new Configuration();
+const apiInstance = new PlansApi(configuration);
+
+let id: number; //计划ID (default to undefined)
+
+const { status, data } = await apiInstance.planNextStepSuggest(
+    id
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **id** | [**number**] | 计划ID | defaults to undefined|
+
+
+### Return type
+
+**PlanNextStepSuggestionResponse**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**400** | Bad Request |  -  |
+|**401** | Unauthorized |  -  |
+|**404** | Not Found |  -  |
+|**500** | Internal Server Error |  -  |
+|**502** | Bad Gateway |  -  |
+|**503** | Service Unavailable |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

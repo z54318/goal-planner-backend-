@@ -24,6 +24,8 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { RbacCreatePermissionRequest } from '../models';
 // @ts-ignore
+import type { RbacCreateRoleRequest } from '../models';
+// @ts-ignore
 import type { RbacPermissionListResponse } from '../models';
 // @ts-ignore
 import type { RbacPermissionResponse } from '../models';
@@ -31,6 +33,8 @@ import type { RbacPermissionResponse } from '../models';
 import type { RbacRoleListResponse } from '../models';
 // @ts-ignore
 import type { RbacRolePermissionIDsResponse } from '../models';
+// @ts-ignore
+import type { RbacRoleResponse } from '../models';
 // @ts-ignore
 import type { RbacUpdatePermissionRequest } from '../models';
 // @ts-ignore
@@ -177,6 +181,81 @@ export const RbacApiAxiosParamCreator = function (configuration?: Configuration)
             }
 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 新增角色
+         * @param {RbacCreateRoleRequest} request 角色参数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminRoleCreate: async (request: RbacCreateRoleRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'request' is not null or undefined
+            assertParamExists('adminRoleCreate', 'request', request)
+            const localVarPath = `/api/admin/roles`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(request, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary 删除角色
+         * @param {number} id 角色ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminRoleDelete: async (id: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('adminRoleDelete', 'id', id)
+            const localVarPath = `/api/admin/roles/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -369,6 +448,32 @@ export const RbacApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 新增角色
+         * @param {RbacCreateRoleRequest} request 角色参数
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminRoleCreate(request: RbacCreateRoleRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RbacRoleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminRoleCreate(request, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RbacApi.adminRoleCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary 删除角色
+         * @param {number} id 角色ID
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async adminRoleDelete(id: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResponseBody>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.adminRoleDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RbacApi.adminRoleDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary 获取角色权限绑定
          * @param {number} id 角色ID
          * @param {*} [options] Override http request option.
@@ -456,6 +561,26 @@ export const RbacApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
+         * @summary 新增角色
+         * @param {RbacApiAdminRoleCreateRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminRoleCreate(requestParameters: RbacApiAdminRoleCreateRequest, options?: RawAxiosRequestConfig): AxiosPromise<RbacRoleResponse> {
+            return localVarFp.adminRoleCreate(requestParameters.request, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary 删除角色
+         * @param {RbacApiAdminRoleDeleteRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        adminRoleDelete(requestParameters: RbacApiAdminRoleDeleteRequest, options?: RawAxiosRequestConfig): AxiosPromise<ResponseBody> {
+            return localVarFp.adminRoleDelete(requestParameters.id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 获取角色权限绑定
          * @param {RbacApiAdminRolePermissionsGetRequest} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
@@ -519,6 +644,26 @@ export interface RbacApiAdminPermissionUpdateRequest {
      * 权限参数
      */
     readonly request: RbacUpdatePermissionRequest
+}
+
+/**
+ * Request parameters for adminRoleCreate operation in RbacApi.
+ */
+export interface RbacApiAdminRoleCreateRequest {
+    /**
+     * 角色参数
+     */
+    readonly request: RbacCreateRoleRequest
+}
+
+/**
+ * Request parameters for adminRoleDelete operation in RbacApi.
+ */
+export interface RbacApiAdminRoleDeleteRequest {
+    /**
+     * 角色ID
+     */
+    readonly id: number
 }
 
 /**
@@ -591,6 +736,28 @@ export class RbacApi extends BaseAPI {
      */
     public adminPermissionsList(options?: RawAxiosRequestConfig) {
         return RbacApiFp(this.configuration).adminPermissionsList(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 新增角色
+     * @param {RbacApiAdminRoleCreateRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminRoleCreate(requestParameters: RbacApiAdminRoleCreateRequest, options?: RawAxiosRequestConfig) {
+        return RbacApiFp(this.configuration).adminRoleCreate(requestParameters.request, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 删除角色
+     * @param {RbacApiAdminRoleDeleteRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public adminRoleDelete(requestParameters: RbacApiAdminRoleDeleteRequest, options?: RawAxiosRequestConfig) {
+        return RbacApiFp(this.configuration).adminRoleDelete(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
